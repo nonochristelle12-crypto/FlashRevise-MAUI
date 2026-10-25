@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.Settings.ScheduleRevisionPage"
+             x:DataType="vm:ScheduleRevisionViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="Planifier un rappel" Style="{StaticResource Title}" VerticalOptions="Center" />
+            <Button Grid.Column="2" Text="{StaticResource IconDelete}" Style="{StaticResource IconButton}"
+                    TextColor="{StaticResource Danger}" IsVisible="{Binding IsExisting}"
+                    Command="{Binding DeleteCommand}" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,4,16,32" Spacing="16">
+
+                <Border Style="{StaticResource CardLarge}" Background="{StaticResource PriorityGradient}"
+                        StrokeThickness="0" Shadow="{StaticResource FloatingShadow}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Rappel" Style="{StaticResource Overline}" TextColor="White" />
+                        <Label Text="{Binding PreviewLabel}" Style="{StaticResource Display}" FontSize="32"
+                               TextColor="White" />
+                        <Label Text="{Binding TargetLabel}" Style="{StaticResource Caption}" TextColor="#D9FFFFFF" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource CardLarge}">
+                    <VerticalStackLayout Spacing="16">
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Matière" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Picker ItemsSource="{Binding SubjectNames}"
+                                        SelectedIndex="{Binding SelectedSubjectIndex}"
+                                        Title="Choisis une matière" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Heure du rappel" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <TimePicker Time="{Binding Time}" Format="HH:mm" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Fréquence" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Picker ItemsSource="{Binding RepeatLabels}" SelectedIndex="{Binding RepeatIndex}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Border Style="{StaticResource Card}" Padding="14">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <Label Text="{StaticResource IconNotifications}" Style="{StaticResource Icon}" FontSize="22"
+                                       TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="Rappel actif" Style="{StaticResource LabelStrong}" />
+                                    <Label Text="Tu peux le suspendre sans le supprimer" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                                <Switch Grid.Column="2" IsToggled="{Binding IsEnabled}" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <Button Text="Enregistrer le rappel" Style="{StaticResource PrimaryButton}"
+                                IsEnabled="{Binding IsNotBusy}" Command="{Binding SaveCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                        BackgroundColor="{StaticResource WarningTint}" Stroke="{StaticResource Warning}">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}"
+                           TextColor="{StaticResource Warning}" />
+                </Border>
+
+                <Border Style="{StaticResource Card}" Padding="14">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Label Text="{StaticResource IconTouchApp}" Style="{StaticResource Icon}" FontSize="20"
+                               TextColor="{StaticResource Tertiary}" VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="Un appui, et tu révises" Style="{StaticResource LabelStrong}" />
+                            <Label Text="Toucher la notification ouvre directement la configuration de session pour la matière concernée."
+                                   Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <Label Text="Les notifications locales sont programmées par l'appareil : aucun serveur n'est sollicité."
+                       Style="{StaticResource Caption}" FontSize="11" HorizontalTextAlignment="Center" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

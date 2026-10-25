@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.Settings.GoalsBooksPage"
+             x:DataType="vm:GoalsBooksViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="Objectifs et livres" Style="{StaticResource Title}" VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,4,16,32" Spacing="16">
+
+                <!-- Objectif quotidien -->
+                <Border Style="{StaticResource CardLarge}" Background="{StaticResource PrimaryGradient}"
+                        StrokeThickness="0" Shadow="{StaticResource FloatingShadow}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Objectif quotidien" Style="{StaticResource Overline}" TextColor="White" />
+                        <Label Text="Un cap simple, tenu chaque jour." Style="{StaticResource Headline}" FontSize="22"
+                               TextColor="White" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                            <Border BackgroundColor="#33FFFFFF" StrokeThickness="0" Padding="12,0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                <Entry Text="{Binding DailyGoalText}" Keyboard="Numeric" MaxLength="3"
+                                       TextColor="White" Placeholder="30" PlaceholderColor="#B3FFFFFF" />
+                            </Border>
+                            <Button Grid.Column="1" Text="Enregistrer" Style="{StaticResource PillButton}"
+                                    Command="{Binding SaveGoalCommand}" />
+                        </Grid>
+                        <Label Text="Nombre de cartes à réviser par jour." Style="{StaticResource Caption}"
+                               TextColor="#D9FFFFFF" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Ajouter un livre -->
+                <Border Style="{StaticResource CardLarge}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Ajouter un livre" Style="{StaticResource Title}" FontSize="16" />
+                        <Border Style="{StaticResource InputWrap}">
+                            <Entry Text="{Binding NewBookTitle}" Placeholder="Titre du livre ou du manuel" MaxLength="200"
+                                   ReturnType="Done" ReturnCommand="{Binding AddBookCommand}" />
+                        </Border>
+                        <Button Text="Ajouter à ma bibliothèque" Style="{StaticResource SecondaryButton}"
+                                HeightRequest="46" Command="{Binding AddBookCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Bibliothèque -->
+                <Label Text="Ma bibliothèque" Style="{StaticResource Overline}" />
+
+                <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Books}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:BookRow">
+                            <Border Style="{StaticResource Card}" Padding="14">
+                                <VerticalStackLayout Spacing="10">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label Text="{Binding Title}" Style="{StaticResource LabelStrong}"
+                                                   LineBreakMode="TailTruncation" />
+                                            <Label Text="{Binding StatusLabel}" Style="{StaticResource Caption}" />
+                                        </VerticalStackLayout>
+                                        <Button Grid.Column="1" Text="{StaticResource IconDelete}"
+                                                Style="{StaticResource IconButton}" TextColor="{StaticResource Danger}"
+                                                CommandParameter="{Binding .}" Clicked="OnDeleteClicked" />
+                                    </Grid>
+
+                                    <ProgressBar Progress="{Binding Ratio}" HeightRequest="6" />
+
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                        <Button Text="− 10 %" Style="{StaticResource GhostButton}" HeightRequest="36"
+                                                CommandParameter="{Binding .}" Clicked="OnDecrementClicked" />
+                                        <Label Grid.Column="1" Text="{Binding ProgressLabel}" Style="{StaticResource LabelStrong}"
+                                               HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                        <Button Grid.Column="2" Text="+ 10 %" Style="{StaticResource PillButton}"
+                                                HeightRequest="36" CommandParameter="{Binding .}"
+                                                Clicked="OnIncrementClicked" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <Border Style="{StaticResource CardLarge}" IsVisible="{Binding HasBooks, Converter={StaticResource InvertBool}}">
+                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                        <Label Text="{StaticResource IconAutoStories}" Style="{StaticResource Icon}" FontSize="32"
+                               TextColor="{StaticResource TextMuted}" HorizontalOptions="Center" />
+                        <Label Text="Aucun livre suivi pour l'instant" Style="{StaticResource LabelStrong}"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Ajoute un manuel pour visualiser ta progression chapitre après chapitre."
+                               Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                        BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}"
+                           TextColor="{StaticResource Danger}" />
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.AI.AiChatPage"
+             x:Name="ChatRoot"
+             x:DataType="vm:AiChatViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                <Label Text="Assistant IA" Style="{StaticResource Title}" />
+                <Label Text="Révisions, explications et quiz" Style="{StaticResource Caption}" />
+            </VerticalStackLayout>
+            <Button Grid.Column="2" Text="{StaticResource IconDelete}" Style="{StaticResource IconButton}"
+                    IsEnabled="{Binding HasMessages}" Command="{Binding ClearCommand}" />
+        </Grid>
+
+        <!-- Conversation -->
+        <CollectionView Grid.Row="1" x:Name="MessagesView"
+                        ItemsSource="{Binding Messages}"
+                        SelectionMode="None"
+                        ItemsUpdatingScrollMode="KeepLastItemInView"
+                        Margin="16,4">
+            <CollectionView.EmptyView>
+                <ScrollView>
+                    <VerticalStackLayout Spacing="16" Padding="8,24,8,8">
+                        <Border Style="{StaticResource CardLarge}" Background="{StaticResource PrimaryGradient}"
+                                StrokeThickness="0">
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="{StaticResource IconSmartToy}" Style="{StaticResource Icon}" FontSize="30"
+                                       TextColor="White" HorizontalOptions="Start" />
+                                <Label Text="Pose ta question, je t'aide à comprendre et à retenir." Style="{StaticResource Headline}"
+                                       FontSize="21" TextColor="White" />
+                                <Label Text="L'assistant s'appuie sur l'IA Groq. Tu peux demander une explication, un quiz ou une méthode de mémorisation."
+                                       Style="{StaticResource Caption}" TextColor="#D9FFFFFF" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" IsVisible="{Binding HasApiKey, Converter={StaticResource InvertBool}}"
+                                BackgroundColor="{StaticResource WarningTint}" Stroke="{StaticResource Warning}">
+                            <Label Text="Aucune clé API configurée. Ouvre Profil › Clé API IA pour discuter avec l'assistant."
+                                   Style="{StaticResource Caption}" TextColor="{StaticResource Warning}" />
+                        </Border>
+
+                        <VerticalStackLayout Spacing="8" IsVisible="{Binding ShowSuggestions}">
+                            <Label Text="Suggestions" Style="{StaticResource Overline}" />
+                            <Border Style="{StaticResource Card}" Padding="14">
+                                <Label Text="Explique-moi la mémoire à court et long terme." Style="{StaticResource Body}" />
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding AskMemoryCommand}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                            <Border Style="{StaticResource Card}" Padding="14">
+                                <Label Text="Crée un mini-quiz sur la photosynthèse." Style="{StaticResource Body}" />
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding AskQuizCommand}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                            <Border Style="{StaticResource Card}" Padding="14">
+                                <Label Text="Donne-moi une méthode pour retenir les dates clés." Style="{StaticResource Body}" />
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding AskMethodCommand}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:ChatBubble">
+                    <Border Margin="0,4" Padding="14,10" StrokeThickness="0"
+                            HorizontalOptions="Start" MaximumWidthRequest="520"
+                            Background="{AppThemeBinding Light={StaticResource LightSurfaceHigh}, Dark={StaticResource DarkSurfaceHigh}}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="18" />
+                        </Border.StrokeShape>
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsUser}" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryBrush}" />
+                                <Setter Property="HorizontalOptions" Value="End" />
+                            </DataTrigger>
+                        </Border.Triggers>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                <Label Text="{Binding AuthorLabel}" Style="{StaticResource Caption}" FontSize="11" />
+                                <Label Grid.Column="2" Text="{Binding TimeLabel}" Style="{StaticResource Caption}" FontSize="11" />
+                            </Grid>
+
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="{Binding Text}" Style="{StaticResource Body}" LineBreakMode="WordWrap">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsUser}" Value="True">
+                                            <Setter Property="TextColor" Value="White" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                                <ActivityIndicator IsRunning="{Binding ShowTyping}" IsVisible="{Binding ShowTyping}"
+                                                   WidthRequest="16" HeightRequest="16" VerticalOptions="Center"
+                                                   Color="{StaticResource Primary}" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Zone de saisie -->
+        <Border Grid.Row="2" Style="{StaticResource CardFlat}" Padding="12,10,12,16"
+                Background="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}">
+            <VerticalStackLayout Spacing="8">
+
+                <Border Style="{StaticResource Card}" Padding="12"
+                        BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}"
+                        IsVisible="{Binding HasError}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}"
+                               TextColor="{StaticResource Danger}" />
+                        <Button Text="Réessayer" Style="{StaticResource SecondaryButton}" HeightRequest="40"
+                                IsVisible="{Binding HasMessages}" Command="{Binding RetryCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                    <Border Style="{StaticResource InputWrap}" Padding="10,0">
+                        <Entry Text="{Binding Input}" Placeholder="Écris ta question…"
+                               ReturnType="Send" ReturnCommand="{Binding SendCommand}" MaxLength="2000" />
+                    </Border>
+                    <Button Grid.Column="1" Text="{StaticResource IconStop}" Style="{StaticResource IconButton}"
+                            IsVisible="{Binding IsStreaming}" Command="{Binding StopCommand}" />
+                    <Button Grid.Column="2" Text="{StaticResource IconSend}" Style="{StaticResource IconButton}"
+                            TextColor="{StaticResource Primary}" IsEnabled="{Binding CanSend}"
+                            Command="{Binding SendCommand}" />
+                </Grid>
+
+                <Label Text="L'IA peut se tromper : vérifie les notions importantes dans ton cours."
+                       Style="{StaticResource Caption}" FontSize="10" HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>

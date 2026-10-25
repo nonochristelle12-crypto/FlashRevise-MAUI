@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Couleurs sémantiques theme-aware -->
+    <SolidColorBrush x:Key="Canvas" Color="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}" />
+    <SolidColorBrush x:Key="Surface" Color="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}" />
+    <SolidColorBrush x:Key="SurfaceLow" Color="{AppThemeBinding Light={StaticResource LightSurfaceLow}, Dark={StaticResource DarkSurfaceLow}}" />
+    <SolidColorBrush x:Key="SurfaceHigh" Color="{AppThemeBinding Light={StaticResource LightSurfaceHigh}, Dark={StaticResource DarkSurfaceHigh}}" />
+    <SolidColorBrush x:Key="SurfaceHighest" Color="{AppThemeBinding Light={StaticResource LightSurfaceHigh}, Dark={StaticResource DarkSurfaceHighest}}" />
+    <SolidColorBrush x:Key="Overlay" Color="{AppThemeBinding Light={StaticResource LightOverlay}, Dark={StaticResource DarkOverlay}}" />
+    <SolidColorBrush x:Key="InputSurface" Color="{AppThemeBinding Light={StaticResource LightInput}, Dark={StaticResource DarkInput}}" />
+    <SolidColorBrush x:Key="Hairline" Color="{AppThemeBinding Light={StaticResource LightBorder}, Dark={StaticResource DarkBorder}}" />
+    <SolidColorBrush x:Key="HairlineStrong" Color="{AppThemeBinding Light={StaticResource LightBorderStrong}, Dark={StaticResource DarkBorderStrong}}" />
+    <SolidColorBrush x:Key="Sheen" Color="{AppThemeBinding Light={StaticResource SurfaceTintLight}, Dark={StaticResource SurfaceTintDark}}" />
+
+    <SolidColorBrush x:Key="TextPrimary" Color="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
+    <SolidColorBrush x:Key="TextSecondary" Color="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
+    <SolidColorBrush x:Key="TextMuted" Color="{AppThemeBinding Light={StaticResource LightTextMuted}, Dark={StaticResource DarkTextMuted}}" />
+
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}" />
+    <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}" />
+    <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}" />
+    <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource Danger}" />
+
+    <!-- Dégradés signature -->
+    <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+        <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="PriorityGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#7C5CFF" Offset="0.0" />
+        <GradientStop Color="#5A2FE0" Offset="0.55" />
+        <GradientStop Color="#4A22C9" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="SuccessGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{StaticResource Tertiary}" Offset="0.0" />
+        <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="StreakGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{StaticResource Warning}" Offset="0.0" />
+        <GradientStop Color="{StaticResource Danger}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="SurfaceSheen" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{AppThemeBinding Light=#FFFFFF, Dark=#FFFFFF}" Offset="0.0" />
+        <GradientStop Color="{AppThemeBinding Light=#F7F8FD, Dark=#171A29}" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <!-- Typographie -->
+    <x:String x:Key="FontDisplay">SpaceGrotesk</x:String>
+    <x:String x:Key="FontBody">Inter</x:String>
+
+    <x:Double x:Key="TextDisplay">48</x:Double>
+    <x:Double x:Key="TextDisplayMobile">36</x:Double>
+    <x:Double x:Key="TextHeadline">32</x:Double>
+    <x:Double x:Key="TextHeadlineMobile">24</x:Double>
+    <x:Double x:Key="TextTitle">20</x:Double>
+    <x:Double x:Key="TextBodyLg">18</x:Double>
+    <x:Double x:Key="TextBody">16</x:Double>
+    <x:Double x:Key="TextBodySm">14</x:Double>
+    <x:Double x:Key="TextLabel">14</x:Double>
+    <x:Double x:Key="TextCaption">12</x:Double>
+    <x:Double x:Key="TextOverline">11</x:Double>
+
+    <!-- Grille 8pt -->
+    <x:Double x:Key="SpaceXs">4</x:Double>
+    <x:Double x:Key="SpaceSm">8</x:Double>
+    <x:Double x:Key="SpaceMd">16</x:Double>
+    <x:Double x:Key="SpaceLg">24</x:Double>
+    <x:Double x:Key="SpaceXl">32</x:Double>
+    <x:Double x:Key="PageMargin">16</x:Double>
+    <x:Double x:Key="PageMarginDesktop">40</x:Double>
+
+    <!-- Rayons -->
+    <x:Double x:Key="RadiusSm">8</x:Double>
+    <x:Double x:Key="RadiusMd">12</x:Double>
+    <x:Double x:Key="RadiusLg">16</x:Double>
+    <x:Double x:Key="RadiusXl">24</x:Double>
+    <x:Double x:Key="RadiusPill">999</x:Double>
+
+    <!-- Cibles tactiles : minimum 48dp exigé par le design system -->
+    <x:Double x:Key="TouchTarget">48</x:Double>
+    <x:Double x:Key="PrimaryButtonHeight">52</x:Double>
+
+    <Shadow x:Key="CardShadow" Brush="#000000" Offset="0,6" Radius="18" Opacity="0.18" />
+    <Shadow x:Key="FloatingShadow" Brush="#6C4CF1" Offset="0,10" Radius="24" Opacity="0.35" />
+
+</ResourceDictionary>

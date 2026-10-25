@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!--
+        Palette Neo-Study Kinetic — source : projet Stitch "FlashRevise Mobile UI Design System"
+        (design system Neo-Study Kinetic, colorMode DARK, primaryContainer #6C4CF1).
+        Valeurs brutes uniquement : les couleurs sémantiques theme-aware vivent dans Themes.xaml.
+    -->
+
+    <!-- Marque -->
+    <Color x:Key="Primary">#6C4CF1</Color>
+    <Color x:Key="PrimaryDeep">#5F3CE4</Color>
+    <Color x:Key="PrimarySoft">#F0EAFF</Color>
+    <Color x:Key="PrimaryTint">#C9BEFF</Color>
+    <Color x:Key="OnPrimary">#FFFFFF</Color>
+    <Color x:Key="OnPrimaryContainer">#F0EAFF</Color>
+
+    <Color x:Key="Secondary">#22D3EE</Color>
+    <Color x:Key="SecondarySoft">#5DE6FF</Color>
+    <Color x:Key="SecondaryDeep">#00CBE6</Color>
+
+    <Color x:Key="Tertiary">#34D399</Color>
+    <Color x:Key="TertiaryDeep">#007B55</Color>
+    <Color x:Key="Warning">#FBBF24</Color>
+    <Color x:Key="Danger">#F87171</Color>
+
+    <!-- Canvas & surfaces — Dark (mode par défaut) -->
+    <Color x:Key="DarkCanvas">#101221</Color>
+    <Color x:Key="DarkSurfaceLowest">#0B0D1C</Color>
+    <Color x:Key="DarkSurfaceLow">#191A2A</Color>
+    <Color x:Key="DarkSurface">#1A1D2E</Color>
+    <Color x:Key="DarkSurfaceHigh">#272939</Color>
+    <Color x:Key="DarkSurfaceHighest">#323444</Color>
+    <Color x:Key="DarkOverlay">#24283E</Color>
+    <Color x:Key="DarkInput">#151726</Color>
+    <Color x:Key="DarkBorder">#2C2F42</Color>
+    <Color x:Key="DarkBorderStrong">#3A3D52</Color>
+
+    <!-- Texte — Dark -->
+    <Color x:Key="DarkTextPrimary">#E1E1F7</Color>
+    <Color x:Key="DarkTextSecondary">#C9C4D8</Color>
+    <Color x:Key="DarkTextMuted">#938EA1</Color>
+
+    <!-- Canvas & surfaces — Light -->
+    <Color x:Key="LightCanvas">#F8F9FC</Color>
+    <Color x:Key="LightSurfaceLow">#F2F4FA</Color>
+    <Color x:Key="LightSurface">#FFFFFF</Color>
+    <Color x:Key="LightSurfaceHigh">#EDF0F8</Color>
+    <Color x:Key="LightOverlay">#FFFFFF</Color>
+    <Color x:Key="LightInput">#F4F6FB</Color>
+    <Color x:Key="LightBorder">#E4E7F1</Color>
+    <Color x:Key="LightBorderStrong">#CFD4E4</Color>
+
+    <!-- Texte — Light -->
+    <Color x:Key="LightTextPrimary">#14162B</Color>
+    <Color x:Key="LightTextSecondary">#4B5069</Color>
+    <Color x:Key="LightTextMuted">#8A8FA6</Color>
+
+    <!-- Teintes translucides (feedback de révision) -->
+    <Color x:Key="DangerTint">#1FF87171</Color>
+    <Color x:Key="WarningTint">#1FFBBF24</Color>
+    <Color x:Key="SecondaryTint">#1F22D3EE</Color>
+    <Color x:Key="TertiaryTint">#1F34D399</Color>
+    <Color x:Key="PrimaryTintSoft">#266C4CF1</Color>
+    <Color x:Key="SurfaceTintDark">#14FFFFFF</Color>
+    <Color x:Key="SurfaceTintLight">#0A000000</Color>
+
+</ResourceDictionary>

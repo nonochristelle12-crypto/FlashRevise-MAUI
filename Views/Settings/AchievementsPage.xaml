@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             xmlns:controls="clr-namespace:FlashRevise.Controls"
+             x:Class="FlashRevise.Views.Settings.AchievementsPage"
+             x:DataType="vm:AchievementsViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="Succès" Style="{StaticResource Title}" VerticalOptions="Center" />
+        </Grid>
+
+        <RefreshView Grid.Row="1" Command="{Binding LoadCommand}" RefreshColor="{StaticResource Primary}">
+            <ScrollView>
+                <VerticalStackLayout Padding="16,4,16,32" Spacing="16">
+
+                    <Border Style="{StaticResource CardLarge}" Background="{StaticResource StreakGradient}"
+                            StrokeThickness="0" Shadow="{StaticResource FloatingShadow}">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                            <VerticalStackLayout Spacing="8" VerticalOptions="Center">
+                                <Label Text="Collection de succès" Style="{StaticResource Overline}" TextColor="White" />
+                                <Label Text="{Binding UnlockedLabel}" Style="{StaticResource Display}" FontSize="34"
+                                       TextColor="White" />
+                                <Label Text="Chaque session rapproche du prochain badge." Style="{StaticResource Caption}"
+                                       TextColor="#E6FFFFFF" />
+                            </VerticalStackLayout>
+                            <controls:RingProgress Progress="{Binding CompletionRatio}" Caption="{Binding CompletionLabel}"
+                                                   RingColor="White" TrackColor="#40FFFFFF" CaptionColor="White"
+                                                   WidthRequest="104" HeightRequest="104" StrokeSize="9" />
+                        </Grid>
+                    </Border>
+
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                                       Color="{StaticResource Primary}" />
+
+                    <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Rows}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:AchievementRow">
+                                <Border Style="{StaticResource Card}" Padding="14">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsUnlocked}" Value="False">
+                                            <Setter Property="Opacity" Value="0.72" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                                        <Border WidthRequest="52" HeightRequest="52" StrokeThickness="0"
+                                                BackgroundColor="{StaticResource PrimaryTintSoft}" VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="26" />
+                                            </Border.StrokeShape>
+                                            <Label Text="{Binding Glyph}" FontFamily="MaterialSymbols" FontSize="26"
+                                                   TextColor="{StaticResource PrimaryTint}"
+                                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                            <Label Text="{Binding Title}" Style="{StaticResource LabelStrong}" />
+                                            <Label Text="{Binding Description}" Style="{StaticResource Caption}" />
+                                            <ProgressBar Progress="{Binding Ratio}" HeightRequest="5" />
+                                            <Label Text="{Binding ProgressLabel}" Style="{StaticResource Caption}" FontSize="11" />
+                                        </VerticalStackLayout>
+
+                                        <Border Grid.Column="2" Style="{StaticResource Chip}" Padding="8,3" VerticalOptions="Start"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource LightInput}, Dark={StaticResource DarkInput}}"
+                                                Stroke="{StaticResource Hairline}">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsUnlocked}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource TertiaryTint}" />
+                                                    <Setter Property="Stroke" Value="{StaticResource TertiaryBrush}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Label Text="{Binding BadgeLabel}" Style="{StaticResource ChipLabel}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsUnlocked}" Value="True">
+                                                        <Setter Property="TextColor" Value="{StaticResource Tertiary}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <Border Style="{StaticResource CardLarge}" IsVisible="{Binding HasRows, Converter={StaticResource InvertBool}}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Catalogue indisponible" Style="{StaticResource LabelStrong}" />
+                            <Label Text="Aucun succès à afficher pour le moment." Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                            BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                        <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}"
+                               TextColor="{StaticResource Danger}" />
+                    </Border>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

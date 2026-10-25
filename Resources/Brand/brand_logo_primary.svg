@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96" fill="none">
+  <defs>
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6C4CF1" />
+      <stop offset="100%" stop-color="#22D3EE" />
+    </linearGradient>
+  </defs>
+  <rect x="12" y="16" width="64" height="64" rx="18" fill="url(#brandGradient)" />
+  <path d="M48 28L34 52H44L41 68L58 46H48L53 28Z" fill="#FFFFFF" />
+  <text x="92" y="58" font-family="Space Grotesk, Segoe UI, sans-serif" font-size="28" font-weight="700" fill="#E1E1F7">FlashRevise</text>
+</svg>

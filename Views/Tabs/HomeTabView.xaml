@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             xmlns:models="clr-namespace:FlashRevise.Models"
+             xmlns:controls="clr-namespace:FlashRevise.Controls"
+             x:Class="FlashRevise.Views.Tabs.HomeTabView"
+             x:DataType="vm:HomeViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <RefreshView Command="{Binding LoadCommand}" RefreshColor="{StaticResource Primary}">
+        <ScrollView>
+            <VerticalStackLayout Padding="16,12,16,96" Spacing="16">
+
+                <!-- En-tête -->
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
+                    <Border Style="{StaticResource LogoBadge}" VerticalOptions="Center">
+                        <Label Text="{StaticResource IconBolt}" FontFamily="MaterialSymbols" FontSize="20" TextColor="White"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+
+                    <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                        <Label Text="FlashRevise" Style="{StaticResource Title}" FontSize="17" VerticalOptions="Center" />
+                        <Border Style="{StaticResource Chip}" Padding="8,3" VerticalOptions="Center"
+                                BackgroundColor="{StaticResource TertiaryTint}" Stroke="{StaticResource Tertiary}">
+                            <HorizontalStackLayout Spacing="4">
+                                <BoxView WidthRequest="6" HeightRequest="6" CornerRadius="3" Color="{StaticResource Tertiary}" VerticalOptions="Center" />
+                                <Label Text="En ligne" Style="{StaticResource ChipLabel}" FontSize="10"
+                                       TextColor="{StaticResource Tertiary}" />
+                            </HorizontalStackLayout>
+                        </Border>
+                    </HorizontalStackLayout>
+
+                    <Button Grid.Column="2" Text="{StaticResource IconNotifications}"
+                            Style="{StaticResource IconButton}"
+                            Command="{Binding OpenNotificationsCommand}" />
+
+                    <Border Grid.Column="3" Style="{StaticResource Avatar}">
+                        <Label Text="{StaticResource IconPerson}" FontFamily="MaterialSymbols" FontSize="20"
+                               TextColor="{StaticResource PrimaryTint}"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                </Grid>
+
+                <!-- Salutation -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="{Binding Greeting}" Style="{StaticResource Headline}" />
+                        <Label Text="Prêt à booster ta mémoire ?" Style="{StaticResource Body}" />
+                    </VerticalStackLayout>
+
+                    <Border Grid.Column="1" Style="{StaticResource Chip}" BackgroundColor="{StaticResource WarningTint}"
+                            Stroke="{StaticResource Warning}" VerticalOptions="Center" IsVisible="{Binding HasStreak}">
+                        <HorizontalStackLayout Spacing="4">
+                            <Label Text="{StaticResource IconLocalFireDepartment}" FontFamily="MaterialSymbols"
+                                   FontSize="16" TextColor="{StaticResource Warning}" />
+                            <Label Text="{Binding Dashboard.StreakDays, StringFormat='{0} jours'}"
+                                   Style="{StaticResource ChipLabel}" TextColor="{StaticResource Warning}" />
+                        </HorizontalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Bandeau hors-ligne -->
+                <Border IsVisible="{Binding IsOffline}" BackgroundColor="{StaticResource WarningTint}"
+                        Stroke="{StaticResource Warning}" StrokeThickness="1" Padding="12,8">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <HorizontalStackLayout Spacing="8">
+                        <Label Text="{StaticResource IconWifiOff}" FontFamily="MaterialSymbols" FontSize="18"
+                               TextColor="{StaticResource Warning}" VerticalOptions="Center" />
+                        <Label Text="Hors-ligne : tes révisions sont enregistrées localement." Style="{StaticResource Caption}"
+                               TextColor="{StaticResource Warning}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Session prioritaire -->
+                <Border Style="{StaticResource CardLarge}" Background="{StaticResource PriorityGradient}" StrokeThickness="0"
+                        Shadow="{StaticResource FloatingShadow}">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Border Style="{StaticResource Chip}" BackgroundColor="#33FFFFFF" StrokeThickness="0" Padding="10,4"
+                                    HorizontalOptions="Start">
+                                <HorizontalStackLayout Spacing="6">
+                                    <Label Text="{StaticResource IconSchedule}" FontFamily="MaterialSymbols" FontSize="14" TextColor="White" />
+                                    <Label Text="Session prioritaire" Style="{StaticResource ChipLabel}" TextColor="White" />
+                                </HorizontalStackLayout>
+                            </Border>
+                            <Label Grid.Column="1" Text="~8 min" Style="{StaticResource Caption}" TextColor="#E6FFFFFF"
+                                   VerticalOptions="Center" />
+                        </Grid>
+
+                        <Label Text="{Binding DueHeadline}" Style="{StaticResource Headline}" TextColor="White" />
+                        <Label Text="{Binding DueSubtitle}" Style="{StaticResource Body}" TextColor="#D9FFFFFF" />
+
+                        <HorizontalStackLayout Spacing="8">
+                            <Border Style="{StaticResource Chip}" BackgroundColor="#26FFFFFF" StrokeThickness="0" Padding="10,4">
+                                <Label Text="{Binding Dashboard.UrgentCards, StringFormat='{0} Urgentes'}"
+                                       Style="{StaticResource ChipLabel}" TextColor="White" />
+                            </Border>
+                            <Border Style="{StaticResource Chip}" BackgroundColor="#26FFFFFF" StrokeThickness="0" Padding="10,4">
+                                <Label Text="{Binding Dashboard.SpacedCards, StringFormat='{0} Rappels espacés'}"
+                                       Style="{StaticResource ChipLabel}" TextColor="White" />
+                            </Border>
+                        </HorizontalStackLayout>
+
+                        <Button Text="Commencer la révision"
+                                BackgroundColor="White"
+                                TextColor="{StaticResource PrimaryDeep}"
+                                CornerRadius="14"
+                                HeightRequest="50"
+                                FontFamily="{StaticResource FontDisplay}"
+                                FontAttributes="Bold"
+                                Command="{Binding StartRevisionCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Actions rapides -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <Border Grid.Column="0" Style="{StaticResource Card}" Padding="10">
+                        <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                            <Label Text="{StaticResource IconLibraryAdd}" FontFamily="MaterialSymbols" FontSize="22"
+                                   TextColor="{StaticResource PrimaryTint}" HorizontalOptions="Center" />
+                            <Label Text="Matière" Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding AddSubjectCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+
+                    <Border Grid.Column="1" Style="{StaticResource Card}" Padding="10">
+                        <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                            <Label Text="{StaticResource IconAutoAwesome}" FontFamily="MaterialSymbols" FontSize="22"
+                                   TextColor="{StaticResource Secondary}" HorizontalOptions="Center" />
+                            <Label Text="Générer IA" Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenAiCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+
+                    <Border Grid.Column="2" Style="{StaticResource Card}" Padding="10">
+                        <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                            <Label Text="{StaticResource IconDocumentScanner}" FontFamily="MaterialSymbols" FontSize="22"
+                                   TextColor="{StaticResource Tertiary}" HorizontalOptions="Center" />
+                            <Label Text="Scanner doc" Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenAiCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </Grid>
+
+                <!-- Objectif du jour -->
+                <Border Style="{StaticResource Card}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                        <controls:RingProgress WidthRequest="62" HeightRequest="62"
+                                               Progress="{Binding GoalRatio}"
+                                               RingColor="{StaticResource Primary}"
+                                               TrackColor="{AppThemeBinding Light={StaticResource LightBorder}, Dark={StaticResource DarkBorder}}"
+                                               Caption="{Binding GoalPercentLabel}"
+                                               CaptionColor="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="Objectif du jour" Style="{StaticResource LabelStrong}" />
+                                <Label Grid.Column="1" Style="{StaticResource Caption}">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding Dashboard.ReviewedToday}" TextColor="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}"
+                                                  FontAttributes="Bold" />
+                                            <Span Text=" / " />
+                                            <Span Text="{Binding Dashboard.DailyGoal}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Grid>
+                            <Label Text="{Binding GoalSummary}" Style="{StaticResource Caption}" />
+                            <ProgressBar Progress="{Binding GoalRatio}" HeightRequest="6" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- Alerte rétention -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                            <Label Text="{StaticResource IconPsychology}" FontFamily="MaterialSymbols" FontSize="20"
+                                   TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="Alerte rétention IA" Style="{StaticResource LabelStrong}"
+                                   VerticalOptions="Center" />
+                            <Border Grid.Column="2" Style="{StaticResource Chip}" Padding="8,2"
+                                    BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                                <Label Text="{Binding Dashboard.RetentionDelta, StringFormat='{0:0}%'}"
+                                       Style="{StaticResource ChipLabel}" TextColor="{StaticResource Danger}" />
+                            </Border>
+                        </Grid>
+                        <Label Text="{Binding RetentionLabel}" Style="{StaticResource Caption}" />
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <Button Grid.Column="0" Text="Réviser maintenant" Style="{StaticResource PillButton}"
+                                    BackgroundColor="{StaticResource Primary}" TextColor="White"
+                                    Command="{Binding StartRevisionCommand}" />
+                            <Button Grid.Column="1" Text="Ignorer" Style="{StaticResource PillButton}"
+                                    BackgroundColor="Transparent" BorderWidth="1"
+                                    BorderColor="{AppThemeBinding Light={StaticResource LightBorderStrong}, Dark={StaticResource DarkBorderStrong}}" TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Prochaines révisions -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="Prochaines révisions" Style="{StaticResource Title}" FontSize="17" />
+                    <Label Grid.Column="1" Text="{Binding MasteryLabel}" Style="{StaticResource Caption}" VerticalOptions="Center" />
+                </Grid>
+
+                <CollectionView ItemsSource="{Binding NextReviews}" HeightRequest="150" IsVisible="{Binding HasNextReviews}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:SubjectStats">
+                            <Border Style="{StaticResource Card}" WidthRequest="190" Padding="14">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnSubjectCardTapped" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="8">
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" Color="{Binding Color}"
+                                                 VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="{Binding SubjectName}" Style="{StaticResource LabelStrong}"
+                                               Margin="8,0,0,0" LineBreakMode="TailTruncation" />
+                                    </Grid>
+                                    <Label Text="{Binding TotalCards, StringFormat='{0} cartes'}" Style="{StaticResource Caption}" />
+                                    <ProgressBar Progress="{Binding MasteryRatio}" HeightRequest="5" />
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="{Binding MasteryRatio, StringFormat='{0:P0}'}" Style="{StaticResource Caption}" />
+                                        <Label Grid.Column="1" Text="{Binding DueCards, StringFormat='{0} à réviser'}"
+                                               Style="{StaticResource Caption}" TextColor="{StaticResource Warning}" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- État vide -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding IsEmpty}">
+                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Padding="0,12">
+                        <Label Text="{StaticResource IconLibraryAdd}" FontFamily="MaterialSymbols" FontSize="32"
+                               TextColor="{AppThemeBinding Light={StaticResource LightTextMuted}, Dark={StaticResource DarkTextMuted}}" HorizontalOptions="Center" />
+                        <Label Text="Aucune matière pour l'instant" Style="{StaticResource LabelStrong}" HorizontalTextAlignment="Center" />
+                        <Label Text="Crée ta première matière ou génère des cartes avec l'IA."
+                               Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
+                        <Button Text="Créer une matière" Style="{StaticResource PillButton}" Command="{Binding AddSubjectCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Erreur -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                        BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}" TextColor="{StaticResource Danger}" />
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentView>

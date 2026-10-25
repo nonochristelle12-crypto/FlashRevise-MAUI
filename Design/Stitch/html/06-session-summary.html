@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><title>FlashRevise</title><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface": "#101221", "on-tertiary": "#003825", "on-primary-container": "#f0eaff", "primary-fixed-dim": "#c9beff", "surface-variant": "#323444", "tertiary-container": "#007b55", "outline": "#938ea1", "primary-container": "#6c4cf1", "on-primary": "#30009b", "on-primary-fixed": "#1b0062", "error-container": "#93000a", "secondary-container": "#00cbe6", "tertiary": "#45dfa4", "outline-variant": "#484555", "on-secondary": "#00363e", "on-tertiary-fixed": "#002114", "on-surface-variant": "#c9c4d8", "on-tertiary-container": "#acffd5", "surface-tint": "#c9beff", "inverse-on-surface": "#2d2f40", "tertiary-fixed-dim": "#45dfa4", "secondary": "#5de6ff", "on-secondary-fixed": "#001f25", "secondary-fixed": "#a2eeff", "background": "#101221", "on-tertiary-fixed-variant": "#005137", "surface-container-low": "#191a2a", "tertiary-fixed": "#68fcbf", "surface-container-high": "#272939", "inverse-primary": "#5f3ce4", "surface-container-lowest": "#0b0d1c", "on-secondary-fixed-variant": "#004e5a", "on-primary-fixed-variant": "#4616cc", "primary": "#c9beff", "surface-container-highest": "#323444", "on-error": "#690005", "secondary-fixed-dim": "#2fd9f4", "inverse-surface": "#e1e1f7", "surface-dim": "#101221", "primary-fixed": "#e6deff", "error": "#ffb4ab", "surface-container": "#1d1f2e", "on-secondary-container": "#00515d", "on-surface": "#e1e1f7", "on-background": "#e1e1f7", "on-error-container": "#ffdad6", "surface-bright": "#363849" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "gutter-desktop": "1.5rem", "space-md": "1rem", "space-xl": "2rem", "space-sm": "0.5rem", "margin": "1rem", "space-xs": "0.25rem", "gutter": "1rem", "margin-desktop": "2.5rem", "space-lg": "1.5rem" }, fontFamily: { "label-lg": ["Inter"], "display-lg-mobile": ["Space Grotesk"], "headline-lg-mobile": ["Space Grotesk"], "headline-lg": ["Space Grotesk"], "headline-md": ["Space Grotesk"], "body-md": ["Inter"], "label-md": ["Inter"], "body-sm": ["Inter"], "body-lg": ["Inter"], "display-lg": ["Space Grotesk"], "label-sm": ["Inter"] }, fontSize: { "label-lg": ["0.875rem", { lineHeight: "1.25rem", letterSpacing: "0.01em", fontWeight: "600" }], "display-lg-mobile": ["2.25rem", { lineHeight: "2.75rem", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-lg-mobile": ["1.5rem", { lineHeight: "2rem", letterSpacing: "-0.01em", fontWeight: "600" }], "headline-lg": ["2rem", { lineHeight: "2.5rem", letterSpacing: "-0.02em", fontWeight: "600" }], "headline-md": ["1.25rem", { lineHeight: "1.75rem", letterSpacing: "-0.01em", fontWeight: "600" }], "body-md": ["1rem", { lineHeight: "1.5rem", fontWeight: "400" }], "label-md": ["0.75rem", { lineHeight: "1rem", letterSpacing: "0.02em", fontWeight: "600" }], "body-sm": ["0.875rem", { lineHeight: "1.25rem", fontWeight: "400" }], "body-lg": ["1.125rem", { lineHeight: "1.75rem", fontWeight: "400" }], "display-lg": ["3rem", { lineHeight: "3.5rem", letterSpacing: "-0.03em", fontWeight: "700" }], "label-sm": ["0.6875rem", { lineHeight: "0.875rem", letterSpacing: "0.04em", fontWeight: "700" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md text-body-md min-h-screen flex flex-col antialiased selection:bg-primary/20"><header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.2)]"><div class="flex justify-between items-center px-margin pt-space-xs text-on-surface-variant font-label-sm text-label-sm select-none"><span>09:41</span><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[15px]">signal_cellular_alt</span><span class="material-symbols-outlined text-[15px]">wifi</span><span class="material-symbols-outlined text-[16px]">battery_full</span></div></div><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><button class="w-11 h-11 -ml-2 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container-high/50 active:scale-95 transition-all" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><img alt="FlashRevise Gradient Logo" class="h-7 w-auto object-contain hidden sm:block" src="https://lh3.googleusercontent.com/aida/AEtjO1XGt0YiOmRQe8LM743__A5n9ne5nsXhJrrhCE91hIubqBO9EJBasmqzqoP2oakiq1uXcNq6GFGiv9LDplRQdjN1GP6NvdoqIpCfGddwb3vBbWdmQB2j-tXQ8bMHlNmvwO0Nfz9LLO0zJDn7BVDLkGGXqKv6wa8gEZDwaHxmxtDqRgvIXn3WHK6CGSPmpHnT0LtiA26UqDYgtdrySk26Cabx-Ya_JNM3Fl2414HLYwSO_YfA2-BgrGJD26s"/><h1 class="text-on-surface font-headline-md text-headline-md truncate leading-tight">Revision Summary</h1></div><div class="flex items-center gap-space-sm shrink-0"><div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high/80 backdrop-blur-md"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span class="font-label-sm text-label-sm text-tertiary-fixed">En ligne</span></div><a class="relative w-11 h-11 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/50 transition-colors" data-path="notifications" href="#"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-secondary ring-2 ring-surface"></span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 w-full bg-surface pt-24 pb-safe px-margin flex flex-col"><div class="flex flex-col w-full relative pb-8 space-y-5 overflow-hidden">
+<!-- Interactive Celebration Ambient Glows -->
+<div class="absolute -top-12 left-1/2 -translate-x-1/2 w-72 h-72 bg-primary-container/25 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute top-48 right-0 w-48 h-48 bg-secondary/15 rounded-full blur-2xl pointer-events-none"></div>
+<!-- Confetti Canvas Stage -->
+<canvas class="absolute inset-0 pointer-events-none z-20 w-full h-full" id="confetti-canvas"></canvas>
+<!-- Celebratory Header -->
+<div class="flex flex-col items-center text-center relative z-10 px-2 pt-2">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-tertiary shadow-sm mb-3">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-md text-label-md tracking-wide uppercase">Session complétée</span>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight">
+      Session terminée ! 🎉
+    </h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1 max-w-xs">
+      Superbe régularité, continue comme ça !
+    </p>
+</div>
+<!-- Central Circular Score Radial Container -->
+<div class="relative z-10 flex flex-col items-center justify-center py-2">
+<div class="relative w-52 h-52 flex items-center justify-center">
+<!-- Ambient Radial Ring Glow -->
+<div class="absolute inset-4 rounded-full bg-primary-container/20 blur-xl"></div>
+<!-- SVG Circular Progress -->
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 160 160">
+<defs>
+<lineargradient id="scoreGrad" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#6c4cf1"></stop>
+<stop offset="50%" stop-color="#5de6ff"></stop>
+<stop offset="100%" stop-color="#45dfa4"></stop>
+</lineargradient>
+<filter height="140%" id="glowFilter" width="140%" x="-20%" y="-20%">
+<fegaussianblur result="blur" stddeviation="3"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+</defs>
+<!-- Background Track -->
+<circle class="text-surface-container-highest" cx="80" cy="80" fill="transparent" r="66" stroke="currentColor" stroke-width="12"></circle>
+<!-- Active Track: 75% -> perimeter = 2 * pi * 66 ~= 414.69. 75% stroke-dasharray = 311 415 -->
+<circle class="transition-all duration-1000 ease-out" cx="80" cy="80" fill="transparent" filter="url(#glowFilter)" r="66" stroke="url(#scoreGrad)" stroke-dasharray="311.02 414.69" stroke-dashoffset="0" stroke-linecap="round" stroke-width="12"></circle>
+</svg>
+<!-- Center Dynamic Metrics -->
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-surface font-bold tracking-tighter leading-none">
+          18<span class="text-on-surface-variant font-label-lg text-label-lg font-normal">/24</span>
+</span>
+<span class="font-label-md text-label-md text-secondary font-semibold mt-0.5">
+          75% de réussite
+        </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">
+          cartes maîtrisées
+        </span>
+</div>
+</div>
+<!-- Animated Floating XP Pill Badge -->
+<div class="relative -mt-4 z-10 px-4 py-1.5 rounded-full bg-gradient-to-r from-primary-container to-secondary-container text-on-primary-container shadow-lg flex items-center gap-1.5 transform hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[18px] text-tertiary-fixed animate-bounce" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-label-lg text-label-lg font-bold tracking-wide">+120 XP gagnés</span>
+<span class="text-xs">⚡</span>
+</div>
+</div>
+<!-- Streak Update Pill Banner -->
+<div class="relative z-10 w-full bg-surface-container-high rounded-xl p-3.5 flex items-center justify-between shadow-md">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary text-[24px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+<div class="flex flex-col min-w-0">
+<p class="font-label-lg text-label-lg text-on-surface truncate">
+          🔥 Série de 7 jours maintenue !
+        </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">
+          Prochain palier badge dans 3 jours
+        </p>
+</div>
+</div>
+<div class="w-2.5 h-2.5 rounded-full bg-secondary shrink-0 shadow-[0_0_8px_rgba(93,230,255,0.8)]"></div>
+</div>
+<!-- Recall Breakdown Dual Grid -->
+<div class="relative z-10 grid grid-cols-2 gap-3 w-full">
+<!-- Success Breakdown -->
+<div class="bg-surface-container rounded-xl p-3.5 flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<div class="w-7 h-7 rounded-full bg-tertiary-container/30 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-tertiary-container/40 text-on-tertiary-container">75%</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-on-surface">18</div>
+<div class="font-label-md text-label-md text-tertiary mt-0.5 font-medium">Je savais</div>
+</div>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full mt-3 overflow-hidden">
+<div class="bg-tertiary h-full rounded-full" style="width: 75%;"></div>
+</div>
+</div>
+<!-- Review Needed Breakdown -->
+<div class="bg-surface-container rounded-xl p-3.5 flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<div class="w-7 h-7 rounded-full bg-error-container/40 flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-error-container/50 text-on-error-container">25%</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-on-surface">6</div>
+<div class="font-label-md text-label-md text-error mt-0.5 font-medium">À revoir</div>
+</div>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full mt-3 overflow-hidden">
+<div class="bg-error h-full rounded-full" style="width: 25%;"></div>
+</div>
+</div>
+</div>
+<!-- Session In-Depth Stats Row -->
+<div class="relative z-10 w-full bg-surface-container rounded-xl p-3.5 grid grid-cols-3 gap-2 text-center shadow-sm">
+<div class="flex flex-col items-center">
+<div class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">schedule</span>
+<span>Durée</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface mt-1">06m 42s</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary">speed</span>
+<span>Vitesse moy.</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface mt-1">16s/carte</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-tertiary">my_location</span>
+<span>Précision</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface mt-1">75%</span>
+</div>
+</div>
+<!-- Subject Progress Impact Card -->
+<div class="relative z-10 w-full bg-surface-container-low rounded-xl p-3.5 shadow-sm space-y-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary-fixed-dim">
+<span class="material-symbols-outlined text-[20px]">biotech</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Matière impactée</span>
+<h3 class="font-label-lg text-label-lg text-on-surface leading-none mt-0.5">Biologie Cellulaire</h3>
+</div>
+</div>
+<div class="flex items-center gap-1 text-tertiary font-label-md text-label-md px-2 py-0.5 rounded-full bg-tertiary-container/30">
+<span>+6%</span>
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+</div>
+</div>
+<!-- Mastery Level Transition Bar -->
+<div class="space-y-1">
+<div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>Maîtrise passée : <strong class="text-on-surface">68%</strong></span>
+<span>Actuelle : <strong class="text-tertiary font-semibold">74%</strong></span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden flex">
+<div class="bg-primary-container h-full" style="width: 68%;"></div>
+<div class="bg-tertiary h-full animate-pulse" style="width: 6%;"></div>
+</div>
+</div>
+</div>
+<!-- Deck & Context Reference Preview -->
+<div class="relative z-10 w-full rounded-xl bg-surface-container-low p-3 flex items-center gap-3">
+<div class="w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Photomicrograph visual of glowing cellular mitosis organelles in vibrant neon bioluminescent cyan and violet hues, scientific laboratory microscope photography, deep ambient dark aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrvGu233pUklNbjrFqIlyirC_PZk4ubaSBUJadbKVTSjS7I-RfGzTQRsSgEPsTRZRuNS8IhofEYv1qust-EA27joQ4o4sMWaPPlMBAC-uSosx-DBJgE28y4OLaTjqmfOLTC0PeyCo7ltXdurFOurS9Ms2DfnNUNFOdWFBUUjPPOhKf3uFU9VLnMZlDhL8S9NuvkCnufiU2PJNIFnIeqJrmXTF14KNt4S42tzTa-sQBCVB_B3f6-Dgf"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Paquet révisé</span>
+<h4 class="font-label-lg text-label-lg text-on-surface truncate">Mitose &amp; Cycle Cellulaire</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Niveau Licence 2 • 24 cartes au total</p>
+</div>
+</div>
+<!-- Primary & Secondary Action Stack -->
+<div class="relative z-10 flex flex-col gap-2.5 pt-2 w-full">
+<!-- 1. Gradient Focus Re-training Button -->
+<button class="w-full h-[52px] rounded-xl bg-gradient-to-r from-primary-container via-primary-container to-secondary-container text-on-primary-container font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-lg hover:opacity-95 active:scale-[0.99] transition-all">
+<span class="material-symbols-outlined text-[20px]">replay</span>
+<span>Refaire les 6 cartes ratées</span>
+</button>
+<!-- 2. Return to Dashboard Button -->
+<button class="w-full h-[52px] rounded-xl bg-surface-container-high hover:bg-surface-bright text-on-surface font-label-lg text-label-lg flex items-center justify-center gap-2 active:scale-[0.99] transition-all">
+<span class="material-symbols-outlined text-[20px]">home</span>
+<span>Retour au tableau de bord</span>
+</button>
+<!-- 3. Text Action for Advanced Analytics -->
+<button class="w-full py-2.5 rounded-lg text-on-surface-variant hover:text-secondary font-label-md text-label-md flex items-center justify-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[18px]">query_stats</span>
+<span>Voir les statistiques détaillées</span>
+</button>
+</div>
+</div>
+<script>
+  (function initCelebrationCanvas() {
+    const canvas = document.getElementById('confetti-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = canvas.parentElement.offsetWidth;
+    let height = canvas.height = canvas.parentElement.offsetHeight;
+
+    window.addEventListener('resize', () => {
+      if (!canvas || !canvas.parentElement) return;
+      width = canvas.width = canvas.parentElement.offsetWidth;
+      height = canvas.height = canvas.parentElement.offsetHeight;
+    });
+
+    const colors = ['#6c4cf1', '#5de6ff', '#45dfa4', '#c9beff', '#a2eeff'];
+    const particles = Array.from({ length: 48 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * (height * 0.45),
+      size: Math.random() * 5 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      speedY: Math.random() * 1.6 + 0.8,
+      speedX: (Math.random() - 0.5) * 1.2,
+      rotation: Math.random() * 360,
+      rotationSpeed: (Math.random() - 0.5) * 6,
+      opacity: Math.random() * 0.7 + 0.3
+    }));
+
+    let animationFrame;
+    function render() {
+      ctx.clearRect(0, 0, width, height);
+
+      particles.forEach(p => {
+        p.y += p.speedY;
+        p.x += p.speedX;
+        p.rotation += p.rotationSpeed;
+
+        if (p.y > height) {
+          p.y = -10;
+          p.x = Math.random() * width;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = p.opacity;
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
+        ctx.restore();
+      });
+
+      animationFrame = requestAnimationFrame(render);
+    }
+    render();
+  })();
+</script></main></body></html>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             xmlns:models="clr-namespace:FlashRevise.Models"
+             x:Class="FlashRevise.Views.Subjects.SubjectDetailPage"
+             x:DataType="vm:SubjectDetailViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- En-tête -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="{Binding HeaderTitle}" Style="{StaticResource Title}" VerticalOptions="Center" />
+            <Button Grid.Column="2" Text="{StaticResource IconDelete}" Style="{StaticResource IconButton}"
+                    TextColor="{StaticResource Danger}" IsVisible="{Binding IsNew, Converter={StaticResource InvertBool}}"
+                    Command="{Binding ArchiveCommand}" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,4,16,32" Spacing="16">
+
+                <!-- Création -->
+                <VerticalStackLayout Spacing="14" IsVisible="{Binding IsNew}">
+                    <Border Style="{StaticResource CardLarge}">
+                        <VerticalStackLayout Spacing="14">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Nom de la matière" Style="{StaticResource Caption}" />
+                                <Border Style="{StaticResource InputWrap}">
+                                    <Entry Text="{Binding Name}" Placeholder="Ex. Mathématiques" MaxLength="120" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Description" Style="{StaticResource Caption}" />
+                                <Border Style="{StaticResource InputWrap}" Padding="12,8">
+                                    <Editor Text="{Binding Description}" Placeholder="Chapitre, niveau, objectif…"
+                                            AutoSize="TextChanges" HeightRequest="90" MaxLength="400" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Couleur" Style="{StaticResource Caption}" />
+                                <HorizontalStackLayout Spacing="10">
+                                    <Border WidthRequest="34" HeightRequest="34" BackgroundColor="#6C4CF1" Stroke="Transparent"
+                                            StrokeThickness="3">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="17" /></Border.StrokeShape>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding SetColorCommand}" CommandParameter="#6C4CF1" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding SelectedColor, Converter={StaticResource EnumEquals}, ConverterParameter='#6C4CF1'}" Value="True">
+                                                <Setter Property="Stroke" Value="{StaticResource TextPrimary}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                    </Border>
+
+                                    <Border WidthRequest="34" HeightRequest="34" BackgroundColor="#22D3EE" Stroke="Transparent"
+                                            StrokeThickness="3">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="17" /></Border.StrokeShape>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding SetColorCommand}" CommandParameter="#22D3EE" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding SelectedColor, Converter={StaticResource EnumEquals}, ConverterParameter='#22D3EE'}" Value="True">
+                                                <Setter Property="Stroke" Value="{StaticResource TextPrimary}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                    </Border>
+
+                                    <Border WidthRequest="34" HeightRequest="34" BackgroundColor="#34D399" Stroke="Transparent"
+                                            StrokeThickness="3">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="17" /></Border.StrokeShape>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding SetColorCommand}" CommandParameter="#34D399" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding SelectedColor, Converter={StaticResource EnumEquals}, ConverterParameter='#34D399'}" Value="True">
+                                                <Setter Property="Stroke" Value="{StaticResource TextPrimary}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                    </Border>
+
+                                    <Border WidthRequest="34" HeightRequest="34" BackgroundColor="#FBBF24" Stroke="Transparent"
+                                            StrokeThickness="3">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="17" /></Border.StrokeShape>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding SetColorCommand}" CommandParameter="#FBBF24" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding SelectedColor, Converter={StaticResource EnumEquals}, ConverterParameter='#FBBF24'}" Value="True">
+                                                <Setter Property="Stroke" Value="{StaticResource TextPrimary}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                    </Border>
+
+                                    <Border WidthRequest="34" HeightRequest="34" BackgroundColor="#F87171" Stroke="Transparent"
+                                            StrokeThickness="3">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="17" /></Border.StrokeShape>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding SetColorCommand}" CommandParameter="#F87171" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding SelectedColor, Converter={StaticResource EnumEquals}, ConverterParameter='#F87171'}" Value="True">
+                                                <Setter Property="Stroke" Value="{StaticResource TextPrimary}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                    </Border>
+
+                                    <Border WidthRequest="34" HeightRequest="34" BackgroundColor="#FB7185" Stroke="Transparent"
+                                            StrokeThickness="3">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="17" /></Border.StrokeShape>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding SetColorCommand}" CommandParameter="#FB7185" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding SelectedColor, Converter={StaticResource EnumEquals}, ConverterParameter='#FB7185'}" Value="True">
+                                                <Setter Property="Stroke" Value="{StaticResource TextPrimary}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                    </Border>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+
+                            <Button Text="Créer la matière" Style="{StaticResource PrimaryButton}"
+                                    Command="{Binding SaveSubjectCommand}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Détail -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsNew, Converter={StaticResource InvertBool}}">
+
+                    <Border Style="{StaticResource CardLarge}" BackgroundColor="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}"
+                            Stroke="{Binding AccentColor}" StrokeThickness="1.5">
+                        <VerticalStackLayout Spacing="12">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <Border WidthRequest="48" HeightRequest="48" StrokeThickness="0"
+                                        BackgroundColor="{Binding AccentColor}" Opacity="0.9">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="14" /></Border.StrokeShape>
+                                    <Label Text="{StaticResource IconMenuBook}" FontFamily="MaterialSymbols" FontSize="24"
+                                           TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="{Binding SubjectName}" Style="{StaticResource Headline}" FontSize="22" />
+                                    <Label Text="{Binding Description}" Style="{StaticResource Caption}" MaxLines="2" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding CardsLabel}" Style="{StaticResource LabelStrong}" FontSize="16" />
+                                    <Label Text="Cartes" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label Text="{Binding DueLabel}" Style="{StaticResource LabelStrong}" FontSize="16"
+                                           TextColor="{StaticResource Warning}" />
+                                    <Label Text="Échéances" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                    <Label Text="{Binding MasteryLabel}" Style="{StaticResource LabelStrong}" FontSize="16"
+                                           TextColor="{StaticResource Tertiary}" />
+                                    <Label Text="Maîtrise" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <ProgressBar Progress="{Binding MasteryRatio}" HeightRequest="7" ProgressColor="{Binding AccentColor}" />
+
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                <Button Grid.Column="0" Text="Réviser" Style="{StaticResource PrimaryButton}"
+                                        Command="{Binding StartRevisionCommand}" />
+                                <Button Grid.Column="1" Text="Planifier" Style="{StaticResource SecondaryButton}"
+                                        Command="{Binding ScheduleCommand}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Cartes" Style="{StaticResource Title}" FontSize="17" VerticalOptions="Center" />
+                        <Button Grid.Column="1" Text="{StaticResource IconAdd}" Style="{StaticResource IconButton}"
+                                BackgroundColor="{StaticResource PrimaryTintSoft}"
+                                TextColor="{StaticResource PrimaryTint}"
+                                Command="{Binding AddCardCommand}" />
+                    </Grid>
+
+                    <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Cards}" IsVisible="{Binding HasCards}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:Flashcard">
+                                <Border Style="{StaticResource Card}" Padding="14">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                        <VerticalStackLayout Spacing="6">
+                                            <Label Text="{Binding Question}" Style="{StaticResource LabelStrong}"
+                                                   MaxLines="2" LineBreakMode="TailTruncation" />
+                                            <Label Text="{Binding Answer}" Style="{StaticResource Caption}"
+                                                   MaxLines="2" LineBreakMode="TailTruncation" />
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Border Style="{StaticResource Chip}" Padding="8,2">
+                                                    <Label Text="{Binding Difficulty}" Style="{StaticResource ChipLabel}" />
+                                                </Border>
+                                                <Border Style="{StaticResource Chip}" Padding="8,2"
+                                                        IsVisible="{Binding Tags, Converter={StaticResource IsStringNotEmpty}}">
+                                                    <Label Text="{Binding Tags}" Style="{StaticResource ChipLabel}" />
+                                                </Border>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+                                        <Button Grid.Column="1" Text="{StaticResource IconDelete}"
+                                                Style="{StaticResource IconButton}" FontSize="18"
+                                                TextColor="{StaticResource Danger}"
+                                                CommandParameter="{Binding .}" Clicked="OnDeleteCardClicked" />
+                                    </Grid>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCardTapped" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <Border Style="{StaticResource Card}" IsVisible="{Binding IsEmpty}">
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Padding="0,12">
+                            <Label Text="{StaticResource IconStyle}" FontFamily="MaterialSymbols" FontSize="34"
+                                   TextColor="{AppThemeBinding Light={StaticResource LightTextMuted}, Dark={StaticResource DarkTextMuted}}" HorizontalOptions="Center" />
+                            <Label Text="Aucune carte dans cette matière" Style="{StaticResource LabelStrong}"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Ajoute une carte ou génère-en avec l'IA." Style="{StaticResource Caption}"
+                                   HorizontalTextAlignment="Center" />
+                            <Button Text="Ajouter une carte" Style="{StaticResource PillButton}"
+                                    Command="{Binding AddCardCommand}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                        BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}" TextColor="{StaticResource Danger}" />
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

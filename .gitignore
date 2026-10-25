@@ -1,0 +1,41 @@
+# Build outputs
+bin/
+obj/
+artifacts/
+*.binlog
+
+# IDE / user-specific files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userprefs
+*.DotSettings.user
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Secrets — jamais versionnés
+appsettings.local.json
+appsettings.*.local.json
+secrets.json
+*.secret
+*.key
+*.pem
+.env
+.env.*
+
+# Signatures Android
+*.keystore
+*.jks
+key.properties
+
+# Certificats Windows
+*.pfx
+*.snk
+
+# Sorties de publication modèles IA / exports temporaires
+*.tmp
+*.log

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.Tabs.ProfileTabView"
+             x:DataType="vm:ProfileViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <RefreshView Command="{Binding LoadCommand}" RefreshColor="{StaticResource Primary}">
+        <ScrollView>
+            <VerticalStackLayout Padding="16,12,16,96" Spacing="16">
+
+                <!-- En-tête profil -->
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <Border Style="{StaticResource Avatar}" WidthRequest="56" HeightRequest="56">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="28" />
+                        </Border.StrokeShape>
+                        <Label Text="{StaticResource IconPerson}" FontFamily="MaterialSymbols" FontSize="28"
+                               TextColor="{StaticResource PrimaryTint}"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="{Binding Name}" Style="{StaticResource Headline}" FontSize="22" />
+                        <Label Text="{Binding DailyGoalText, StringFormat='Objectif : {0} cartes / jour'}"
+                               Style="{StaticResource Caption}" />
+                    </VerticalStackLayout>
+                    <Label Grid.Column="2" Text="{StaticResource IconVerified}" Style="{StaticResource Icon}"
+                           FontSize="22" TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                </Grid>
+
+                <!-- Statistiques rapides -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <Border Style="{StaticResource Card}" Padding="12">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding StreakLabel}" Style="{StaticResource Title}" FontSize="18"
+                                   TextColor="{StaticResource Warning}" />
+                            <Label Text="Série" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource Card}" Padding="12">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding LongestStreakLabel}" Style="{StaticResource Title}" FontSize="18" />
+                            <Label Text="Record" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2" Style="{StaticResource Card}" Padding="12">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding XpLabel}" Style="{StaticResource Title}" FontSize="18"
+                                   TextColor="{StaticResource Secondary}" />
+                            <Label Text="XP" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Identité -->
+                <Border Style="{StaticResource CardLarge}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Mon profil" Style="{StaticResource Overline}" />
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Prénom" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Entry Text="{Binding Name}" Placeholder="Ton prénom" />
+                            </Border>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Objectif quotidien (cartes)" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Entry Text="{Binding DailyGoalText}" Keyboard="Numeric" Placeholder="30" />
+                            </Border>
+                        </VerticalStackLayout>
+                        <Button Text="Enregistrer" Style="{StaticResource PrimaryButton}"
+                                Command="{Binding SaveProfileCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Navigation apprentissage -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Apprentissage" Style="{StaticResource Overline}" />
+
+                    <Border Style="{StaticResource Card}" Padding="14">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Label Text="{StaticResource IconFlag}" Style="{StaticResource Icon}" FontSize="22"
+                                   TextColor="{StaticResource PrimaryTint}" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Objectifs &amp; livres" Style="{StaticResource LabelStrong}" />
+                                <Label Text="Suis tes chapitres et ton avancement" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="{StaticResource IconChevronRight}"
+                                   Style="{StaticResource Icon}" FontSize="18"
+                                   TextColor="{AppThemeBinding Light={StaticResource LightTextMuted}, Dark={StaticResource DarkTextMuted}}" VerticalOptions="Center" />
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenGoalsCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Padding="14">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Label Text="{StaticResource IconMilitaryTech}" Style="{StaticResource Icon}" FontSize="22"
+                                   TextColor="{StaticResource Warning}" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Succès" Style="{StaticResource LabelStrong}" />
+                                <Label Text="Débloque des badges en révisant" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="{StaticResource IconChevronRight}"
+                                   Style="{StaticResource Icon}" FontSize="18"
+                                   TextColor="{AppThemeBinding Light={StaticResource LightTextMuted}, Dark={StaticResource DarkTextMuted}}" VerticalOptions="Center" />
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenAchievementsCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Padding="14">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Label Text="{StaticResource IconAlarm}" Style="{StaticResource Icon}" FontSize="22"
+                                   TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Rappels" Style="{StaticResource LabelStrong}" />
+                                <Label Text="Notifications de révision planifiées" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="{StaticResource IconChevronRight}"
+                                   Style="{StaticResource Icon}" FontSize="18"
+                                   TextColor="{AppThemeBinding Light={StaticResource LightTextMuted}, Dark={StaticResource DarkTextMuted}}" VerticalOptions="Center" />
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenRemindersCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Préférences -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Préférences" Style="{StaticResource Overline}" />
+
+                    <Border Style="{StaticResource Card}" Padding="14">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Label Text="{StaticResource IconDarkMode}" Style="{StaticResource Icon}" FontSize="22"
+                                   VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="Thème sombre" Style="{StaticResource LabelStrong}" />
+                                <Label Text="Adapte l'interface à ton environnement" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="2" IsToggled="{Binding IsDarkTheme}" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Padding="14">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Label Text="{StaticResource IconCloudOff}" Style="{StaticResource Icon}" FontSize="22"
+                                   TextColor="{StaticResource Warning}" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Mode hors-ligne" Style="{StaticResource LabelStrong}" />
+                                <Label Text="Tes révisions fonctionnent sans réseau" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="{StaticResource IconChevronRight}"
+                                   Style="{StaticResource Icon}" FontSize="18"
+                                   TextColor="{AppThemeBinding Light={StaticResource LightTextMuted}, Dark={StaticResource DarkTextMuted}}" VerticalOptions="Center" />
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenOfflineCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Clé API IA -->
+                <Border Style="{StaticResource CardLarge}">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                            <Label Text="{StaticResource IconKey}" Style="{StaticResource Icon}" FontSize="22"
+                                   TextColor="{StaticResource PrimaryTint}" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Clé API IA (Groq)" Style="{StaticResource Title}" FontSize="16" />
+                                <Label Text="{Binding ApiKeyHint}" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Border Grid.Column="2" Style="{StaticResource Chip}" Padding="8,3"
+                                    BackgroundColor="{StaticResource TertiaryTint}" Stroke="{StaticResource Tertiary}"
+                                    IsVisible="{Binding HasApiKey}">
+                                <Label Text="Active" Style="{StaticResource ChipLabel}" TextColor="{StaticResource Tertiary}" />
+                            </Border>
+                        </Grid>
+
+                        <Border Style="{StaticResource InputWrap}">
+                            <Entry Text="{Binding ApiKeyInput}" IsPassword="True" Placeholder="gsk_..." />
+                        </Border>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <Button Text="Enregistrer" Style="{StaticResource PrimaryButton}" HeightRequest="46"
+                                    Command="{Binding SaveApiKeyCommand}" />
+                            <Button Grid.Column="1" Text="Tester" Style="{StaticResource SecondaryButton}" HeightRequest="46"
+                                    Command="{Binding TestApiKeyCommand}" />
+                        </Grid>
+
+                        <Button Text="Supprimer la clé" Style="{StaticResource GhostButton}"
+                                Command="{Binding ClearApiKeyCommand}" />
+
+                        <Label Text="{Binding ApiStatus}" Style="{StaticResource Caption}" />
+                        <Label Text="{Binding StatusMessage}" Style="{StaticResource Caption}"
+                               TextColor="{StaticResource Secondary}" IsVisible="{Binding HasStatusMessage}" />
+
+                        <Label Text="La clé est conservée par le stockage sécurisé de l'appareil et n'est jamais écrite dans le code source."
+                               Style="{StaticResource Caption}" FontSize="11" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Statut app -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                        BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}" TextColor="{StaticResource Danger}" />
+                </Border>
+
+                <Label Text="FlashRevise 1.0 · Apprends moins, retiens plus."
+                       Style="{StaticResource Caption}" FontSize="11" HorizontalTextAlignment="Center" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentView>

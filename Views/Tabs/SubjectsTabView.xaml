@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             xmlns:models="clr-namespace:FlashRevise.Models"
+             x:Class="FlashRevise.Views.Tabs.SubjectsTabView"
+             x:DataType="vm:SubjectsViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid>
+        <RefreshView Command="{Binding LoadCommand}" RefreshColor="{StaticResource Primary}" IsVisible="{Binding IsNotBusy}">
+            <CollectionView ItemsSource="{Binding Items}" SelectionMode="None">
+
+                <CollectionView.Header>
+                    <VerticalStackLayout Padding="16,12,16,4" Spacing="16">
+
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="Matières" Style="{StaticResource Headline}" />
+                                <Label Text="{Binding ActiveSubjectsLabel}" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="{StaticResource IconAdd}"
+                                    Style="{StaticResource IconButton}"
+                                    BackgroundColor="{StaticResource Primary}"
+                                    TextColor="White"
+                                    Command="{Binding AddSubjectCommand}" />
+                        </Grid>
+
+                        <!-- Recherche -->
+                        <Border Style="{StaticResource InputWrap}" Padding="10,0">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                <Label Text="{StaticResource IconSearch}" Style="{StaticResource Icon}" FontSize="20"
+                                       VerticalOptions="Center" />
+                                <Entry Grid.Column="1" Text="{Binding SearchText}" Placeholder="Rechercher une matière, un tag…" />
+                                <Label Grid.Column="2" Text="{StaticResource IconClose}" Style="{StaticResource Icon}" FontSize="16"
+                                       IsVisible="{Binding SearchText, Converter={StaticResource IsStringNotEmpty}}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding ClearSearchCommand}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+                        </Border>
+
+                        <!-- Filtres -->
+                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                            <HorizontalStackLayout Spacing="8">
+                                <Button Text="Toutes" Style="{StaticResource PillButton}"
+                                        Command="{Binding SetFilterCommand}" CommandParameter="Toutes"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceTintLight}, Dark={StaticResource SurfaceTintDark}}" TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}"
+                                        BorderColor="{AppThemeBinding Light={StaticResource LightBorder}, Dark={StaticResource DarkBorder}}" BorderWidth="1">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding IsAllFilter}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                            <Setter Property="TextColor" Value="White" />
+                                            <Setter Property="BorderColor" Value="{StaticResource Primary}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+
+                                <Button Text="À réviser" Style="{StaticResource PillButton}"
+                                        Command="{Binding SetFilterCommand}" CommandParameter="À réviser"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceTintLight}, Dark={StaticResource SurfaceTintDark}}" TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}"
+                                        BorderColor="{AppThemeBinding Light={StaticResource LightBorder}, Dark={StaticResource DarkBorder}}" BorderWidth="1">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding IsDueFilter}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource WarningTint}" />
+                                            <Setter Property="TextColor" Value="{StaticResource Warning}" />
+                                            <Setter Property="BorderColor" Value="{StaticResource Warning}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+
+                                <Button Text="Maîtrisées" Style="{StaticResource PillButton}"
+                                        Command="{Binding SetFilterCommand}" CommandParameter="Maîtrisées"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceTintLight}, Dark={StaticResource SurfaceTintDark}}" TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}"
+                                        BorderColor="{AppThemeBinding Light={StaticResource LightBorder}, Dark={StaticResource DarkBorder}}" BorderWidth="1">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding IsMasteredFilter}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource TertiaryTint}" />
+                                            <Setter Property="TextColor" Value="{StaticResource Tertiary}" />
+                                            <Setter Property="BorderColor" Value="{StaticResource Tertiary}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+
+                                <Button Text="Archivées" Style="{StaticResource PillButton}"
+                                        Command="{Binding SetFilterCommand}" CommandParameter="Archivées"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceTintLight}, Dark={StaticResource SurfaceTintDark}}" TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}"
+                                        BorderColor="{AppThemeBinding Light={StaticResource LightBorder}, Dark={StaticResource DarkBorder}}" BorderWidth="1">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding IsArchivedFilter}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource SecondaryTint}" />
+                                            <Setter Property="TextColor" Value="{StaticResource Secondary}" />
+                                            <Setter Property="BorderColor" Value="{StaticResource Secondary}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                            </HorizontalStackLayout>
+                        </ScrollView>
+
+                        <!-- Vue d'ensemble -->
+                        <Border Style="{StaticResource CardLarge}">
+                            <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="4">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding AllCount}" Style="{StaticResource Title}" FontSize="22" />
+                                    <Label Text="Total" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label Text="{Binding DueCount}" Style="{StaticResource Title}" FontSize="22"
+                                           TextColor="{StaticResource Warning}" />
+                                    <Label Text="À réviser" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                    <Label Text="{Binding MasteredCount}" Style="{StaticResource Title}" FontSize="22"
+                                           TextColor="{StaticResource Tertiary}" />
+                                    <Label Text="Maîtrisées" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="3" Spacing="2">
+                                    <Label Text="{Binding GlobalMasteryLabel}" Style="{StaticResource Title}" FontSize="22"
+                                           TextColor="{StaticResource Secondary}" />
+                                    <Label Text="Maîtrise" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                                BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                            <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}" TextColor="{StaticResource Danger}" />
+                        </Border>
+                    </VerticalStackLayout>
+                </CollectionView.Header>
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Padding="24,32" Spacing="10" HorizontalOptions="Center">
+                        <Label Text="{StaticResource IconMenuBook}" FontFamily="MaterialSymbols" FontSize="40"
+                               TextColor="{AppThemeBinding Light={StaticResource LightTextMuted}, Dark={StaticResource DarkTextMuted}}" HorizontalOptions="Center" />
+                        <Label Text="Aucune matière dans cette vue" Style="{StaticResource LabelStrong}"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Change de filtre ou crée une nouvelle matière pour commencer."
+                               Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
+                        <Button Text="Nouvelle matière" Style="{StaticResource PrimaryButton}" WidthRequest="200"
+                                Command="{Binding AddSubjectCommand}" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:SubjectStats">
+                        <Border Style="{StaticResource Card}" Padding="0" Margin="16,4">
+                            <Grid ColumnDefinitions="6,*">
+                                <BoxView Color="{Binding AccentColor}" />
+                                <VerticalStackLayout Grid.Column="1" Padding="14" Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="{Binding SubjectName}" Style="{StaticResource Title}" FontSize="17"
+                                               LineBreakMode="TailTruncation" />
+                                        <Label Grid.Column="1" Text="{StaticResource IconChevronRight}"
+                                               Style="{StaticResource Icon}" FontSize="18"
+                                               TextColor="{AppThemeBinding Light={StaticResource LightTextMuted}, Dark={StaticResource DarkTextMuted}}" VerticalOptions="Center" />
+                                    </Grid>
+
+                                    <Label Style="{StaticResource Caption}">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding TotalCards}" />
+                                                <Span Text=" cartes · " />
+                                                <Span Text="{Binding MasteredCards}" />
+                                                <Span Text=" maîtrisées" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+
+                                    <ProgressBar Progress="{Binding MasteryRatio}" HeightRequest="6" />
+
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Style="{StaticResource Chip}" Padding="8,2"
+                                                BackgroundColor="{StaticResource WarningTint}"
+                                                Stroke="{StaticResource Warning}"
+                                                IsVisible="{Binding DueCards, Converter={StaticResource IsPositiveInt}}">
+                                            <Label Text="{Binding DueCards, StringFormat='{0} à réviser'}"
+                                                   Style="{StaticResource ChipLabel}" TextColor="{StaticResource Warning}" />
+                                        </Border>
+                                        <Label Grid.Column="2" Text="{Binding MasteryRatio, StringFormat='{0:P0} de maîtrise'}"
+                                               Style="{StaticResource Caption}" VerticalOptions="Center" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSubjectTapped" CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <CollectionView.Footer>
+                    <BoxView HeightRequest="96" Color="Transparent" />
+                </CollectionView.Footer>
+            </CollectionView>
+        </RefreshView>
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+    </Grid>
+</ContentView>

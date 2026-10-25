@@ -1,0 +1,132 @@
+# Changelog
+
+Toutes les évolutions notables de FlashRevise sont consignées ici.
+Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et le projet suit
+[Semantic Versioning](https://semver.org/lang/fr/).
+
+## [1.0.0] — 2026-10-25
+
+Première version livrée, Android (priorité) et Windows PC.
+
+### Ajouté
+
+#### Design & thème
+
+- Récupération des maquettes Stitch dans `Design/Stitch/` (HTML, captures, logo).
+- Design system « Neo-Study Kinetic » : `Colors.xaml`, `Themes.xaml`, `Styles.xaml`, `Icons.xaml`.
+- Thèmes clair et sombre complets via `AppThemeBinding`, sur tous les écrans.
+- Composant `RingProgress` (anneau de progression dessiné en `GraphicsView`).
+- Master-detail adaptatif téléphone / tablette / PC.
+
+#### Navigation
+
+- `AppShell` avec `ServiceRouteFactory<TPage>` : chaque page est résolue par injection de dépendances.
+- Barre d'onglets custom (5 emplacements) avec FAB central « Réviser ».
+- `Routes.cs` centralise les 18 routes ; deep link depuis les notifications de rappel.
+
+#### Données
+
+- 11 entités SQLite : `Subject`, `Flashcard`, `ReviewSchedule`, `ReviewLog`, `ReviewSession`,
+  `Reminder`, `UserProfile`, `Book`, `Achievement`, `AiGenerationJob`, `SyncQueueItem`.
+- 11 repositories et base `flashrevise.db3` créée au premier lancement.
+- `DataSeeder` : matière de démonstration, cartes et profil initial.
+
+#### Fonctionnalités métier
+
+- CRUD matières (couleur, description, archivage) avec suppression en cascade transactionnelle.
+- CRUD flashcards (question, réponse, astuce, difficulté, tags, image) et recherche.
+- Répétition espacée SM-2 : qualité de rappel, intervalle, facteur de facilité, lapses.
+- Sessions de révision : file de cartes, retournement, chrono, progression, fin de session.
+- Résumé de session : précision, durée, XP, streak, encouragement contextuel.
+- Statistiques : maîtrise globale, révisions et précision sur 14 jours (LiveCharts).
+- Statistiques par matière et historique des 30 dernières sessions.
+- Objectif quotidien, XP, streak et record ; bibliothèque de livres avec progression.
+- Succès (achievements) évalués automatiquement en fin de session et à la mise à jour des livres.
+
+#### Intelligence artificielle (Groq)
+
+- `GroqAiService` : `GenerateFlashcardsAsync`, `ExplainCardAsync`, `ChatAsync`, `SummarizeAsync`,
+  `StreamChatAsync`, `TestConnectionAsync`.
+- Streaming SSE token par token dans le chat tuteur (annulation, retry, suggestions).
+- Flux de génération en 3 écrans : import (texte / PDF / image) → chargement (étapes, annulation) → revue éditable.
+- Suivi des générations dans `AiGenerationJob` (Running / Completed / Failed / Cancelled).
+- Extraction de texte PDF via PdfPig et import d'images via `FilePicker`.
+- Gestion des erreurs typées : clé absente, quota dépassé, indisponibilité du service ; retries et timeouts.
+
+#### Offline & synchronisation
+
+- Détection de connectivité et événements (`OnlineChanged`, `PendingSyncCountChanged`).
+- File de synchronisation persistée avec rejeu FIFO, compteur de tentatives et dernier message d'erreur.
+- Écran dédié : état de connexion, opérations en attente, synchronisation manuelle.
+- Mode local complet lorsque `Sync:Endpoint` est vide.
+
+#### Notifications
+
+- `NotificationService` basé sur `Plugin.LocalNotification` : rappels quotidiens ou hebdomadaires par matière.
+- Réarmement automatique des rappels au démarrage (`AppBootstrapper`).
+- Demande de permission runtime et avertissement en cas de refus.
+- Permissions Android déclarées : `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED`, `SCHEDULE_EXACT_ALARM`.
+
+#### Sécurité
+
+- Clé API Groq stockée **uniquement** dans `SecureStorage` (Keystore Android / DPAPI Windows).
+- Aucune clé dans le code, `appsettings.json`, les ressources ou les logs.
+- Écran Profil dédié à la saisie/validation de la clé, avec test de connexion.
+- `.gitignore` durci : `bin/`, `obj/`, `*.user`, `appsettings.local.json`, `.env`, `*.key`, `*.keystore`, `*.jks`, `*.pfx`.
+
+#### Identité visuelle
+
+- Icône adaptative (`appicon.svg` + `appiconfg.svg`) sur canvas `#101221`, mipmaps Android générés au build.
+- Splash natif animé (`splash.svg` + animation d'apparition du logo).
+- 3 variantes de logo : `brand_logo_primary.svg`, `brand_logo_mono.svg`, `brand_logo_compact.svg`.
+
+#### Documentation
+
+- `README.md` : installation, configuration, structure, dépannage.
+- `ARCHITECTURE.md` : couches, navigation, ERD, flux SM-2 et IA, mode hors ligne.
+- `CHANGELOG.md` : ce fichier.
+
+### Modifié
+
+- Cibles limitées à **Android** et **Windows** (`net10.0-android`, `net10.0-windows10.0.19041.0`).
+- `SupportedOSPlatformVersion` Android porté à **26.0** (`minSdk 26`), cible **API 36**.
+- Toutes les propriétés `[ObservableProperty]` migrées en **propriétés partielles** (AOT/WinRT).
+- `DisplayAlert` remplacé par `DisplayAlertAsync` ; `FadeTo`/`ScaleTo` par leurs variantes *Async*.
+
+### Corrigé
+
+- **Thème** : 81 affectations de `SolidColorBrush` vers des propriétés `Color`
+  (`TextColor`, `BackgroundColor`, `BorderColor`, `BoxView.Color`, couleurs Shell, `RingProgress`)
+  remplacées par des couleurs inline `AppThemeBinding` — évitait une exception de rendu sur chaque page.
+- **Build** : suppression d'un paramètre de constructeur inutilisé (`ReviewSessionService`).
+- **Build** : correction d'un déréférencement possible du `IDispatcherTimer` (`RevisionSessionViewModel`).
+- **Build** : suppression de `StreamReader.EndOfStream` dans la lecture SSE (CA2024).
+- **Sécurité des dépendances** : retrait de `SQLitePCLRaw.bundle_green 2.1.11` (avis GHSA-2m69-gcr7-jv3q,
+  doublon `libe_sqlite3.so` dans l'APK). La pile `SQLitePCLRaw.core 3.0.3` + `SourceGear.sqlite3 3.53.3`,
+  déjà fournie par `sqlite-net-pcl` 1.11.285, est utilisée.
+- **Packaging** : ajout de la référence explicite `Microsoft.Maui.Controls` 10.0.110 (warning MA002).
+- Nettoyage des artefacts du template (`MainPage`, image de démonstration).
+- **Démarrage (runtime)** : `FlashReviseDatabase` dépend d'un chemin calculé au runtime et ne pouvait pas
+  être résolu par le conteneur DI. Enregistrement via fabrique (`FileSystem.AppDataDirectory`), ce qui
+  supprime le crash `0xC000027B / 0x80131509` au lancement Windows.
+- **Assets** : les logos SVG sont expédiés en `MauiAsset` (`Resources/Brand/`) car le pipeline Resizetizer
+  ne sait pas rendre le `<text>` et les graisses variables de ces fichiers (MAUIR0001).
+- **Onboarding** : `CarouselView` remplacé par une vue mono-slide pilotée par `CurrentSlide`
+  (le dimensionnement des items était peu fiable et un `ItemSizingStrategy` inexistant provoquait une
+  `XamlParseException`). La décoration est déplacée dans un `AbsoluteLayout` pour ne plus gonfler la
+  ligne `Auto`. Flèche de retour Shell masquée sur cet écran.
+- **Thème** : brush → `Color` également corrigé sur les pages de détail, de révision et IA.
+
+### Vérifications
+
+- Smoke test visuel Windows (rendu réel, thème sombre, fenêtre 1440×740) : Splash → Onboarding →
+  Accueil, AI Upload.
+- Build et lancement Windows validés de bout en bout ; **Android compilé mais non exécuté**
+  (aucun émulateur disponible dans l'environnement de build).
+
+### Résultats de build
+
+| Cible | Erreurs | Avertissements |
+| --- | --- | --- |
+| `net10.0-windows10.0.19041.0` | 0 | 0 |
+| `net10.0-android` | 0 | 0 |

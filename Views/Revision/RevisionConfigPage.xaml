@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.Revision.RevisionConfigPage"
+             x:DataType="vm:RevisionConfigViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="Nouvelle session" Style="{StaticResource Title}" VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,4,16,32" Spacing="16">
+
+                <!-- Héro -->
+                <Border Style="{StaticResource CardLarge}" Background="{StaticResource PriorityGradient}" StrokeThickness="0"
+                        Shadow="{StaticResource FloatingShadow}">
+                    <VerticalStackLayout Spacing="10">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="{StaticResource IconBolt}" FontFamily="MaterialSymbols" FontSize="22" TextColor="White" />
+                            <Label Text="Prépare ta session" Style="{StaticResource Overline}" TextColor="White"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                        <Label Text="Un objectif clair, un chrono court : la formule qui fait retenir." Style="{StaticResource Headline}"
+                               FontSize="22" TextColor="White" />
+                        <Label Text="{Binding DueLabel}" Style="{StaticResource Caption}" TextColor="#D9FFFFFF" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource CardLarge}">
+                    <VerticalStackLayout Spacing="16">
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Matière" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Picker ItemsSource="{Binding SubjectNames}"
+                                        SelectedIndex="{Binding SelectedSubjectIndex}"
+                                        Title="Choisis une matière" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Nombre de cartes" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Picker ItemsSource="{Binding CountLabels}"
+                                        SelectedIndex="{Binding SelectedCountIndex}"
+                                        Title="Nombre de cartes" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Border Style="{StaticResource Card}" Padding="14">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <Label Text="{StaticResource IconRefresh}" Style="{StaticResource Icon}" FontSize="22"
+                                       TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="Ordre aléatoire" Style="{StaticResource LabelStrong}" />
+                                    <Label Text="Mélange les cartes pour éviter la mémorisation de l'ordre" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                                <Switch Grid.Column="2" IsToggled="{Binding IsRandomized}" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <Button Text="Lancer la session" Style="{StaticResource PrimaryButton}"
+                                Command="{Binding StartCommand}" />
+
+                        <Label Text="{Binding SubjectLabel, StringFormat='Matière sélectionnée : {0}'}"
+                               Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                        BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}" TextColor="{StaticResource Danger}" />
+                </Border>
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Comment ça marche" Style="{StaticResource LabelStrong}" />
+                        <Label Text="Chaque carte est replanifiée par l'algorithme SM-2 : plus tu la connais, plus elle revient tard."
+                               Style="{StaticResource Caption}" />
+                        <Label Text="Tu peux quitter à tout moment, ta progression est enregistrée localement."
+                               Style="{StaticResource Caption}" />
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

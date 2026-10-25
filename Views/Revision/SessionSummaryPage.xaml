@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.Revision.SessionSummaryPage"
+             x:DataType="vm:SessionSummaryViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16,24,16,32" Spacing="16">
+
+            <VerticalStackLayout Spacing="4" IsVisible="{Binding HasResult}">
+                <Label Text="Session terminée" Style="{StaticResource Overline}" />
+                <Label Text="{Binding Headline}" Style="{StaticResource Display}" FontSize="30" />
+                <Label Text="{Binding SubjectName}" Style="{StaticResource Body}" />
+            </VerticalStackLayout>
+
+            <!-- Héro -->
+            <Border Style="{StaticResource CardLarge}" Background="{StaticResource SuccessGradient}" StrokeThickness="0"
+                    Shadow="{StaticResource FloatingShadow}" IsVisible="{Binding HasResult}">
+                <VerticalStackLayout Spacing="12">
+                    <Border Style="{StaticResource Chip}" Padding="10,4" BackgroundColor="#33FFFFFF" StrokeThickness="0"
+                            HorizontalOptions="Center">
+                        <Label Text="Taux de réussite" Style="{StaticResource ChipLabel}" TextColor="White" />
+                    </Border>
+                    <Label Text="{Binding SuccessRateLabel}" Style="{StaticResource Display}" FontSize="64"
+                           TextColor="White" HorizontalTextAlignment="Center" />
+                    <Label Text="{Binding DurationLabel, StringFormat='Durée · {0}'}" Style="{StaticResource Caption}"
+                           TextColor="#E6FFFFFF" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Statistiques -->
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8" IsVisible="{Binding HasResult}">
+                <Border Style="{StaticResource Card}" Padding="12">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="{Binding CorrectAnswers}" Style="{StaticResource Title}" FontSize="22"
+                               TextColor="{StaticResource Tertiary}" />
+                        <Label Text="Réussies" Style="{StaticResource Caption}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="1" Style="{StaticResource Card}" Padding="12">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="{Binding IncorrectAnswers}" Style="{StaticResource Title}" FontSize="22"
+                               TextColor="{StaticResource Danger}" />
+                        <Label Text="À revoir" Style="{StaticResource Caption}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource Card}" Padding="12">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="{Binding AverageLabel}" Style="{StaticResource Title}" FontSize="18" />
+                        <Label Text="Rythme" Style="{StaticResource Caption}" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <!-- Récompenses -->
+            <Border Style="{StaticResource Card}" IsVisible="{Binding HasResult}">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <HorizontalStackLayout Spacing="8">
+                        <Label Text="{StaticResource IconBolt}" FontFamily="MaterialSymbols" FontSize="20"
+                               TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                        <VerticalStackLayout Spacing="1">
+                            <Label Text="{Binding XpLabel}" Style="{StaticResource LabelStrong}" />
+                            <Label Text="Expérience gagnée" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Grid.Column="1" Spacing="8">
+                        <Label Text="{StaticResource IconLocalFireDepartment}" FontFamily="MaterialSymbols" FontSize="20"
+                               TextColor="{StaticResource Warning}" VerticalOptions="Center" />
+                        <VerticalStackLayout Spacing="1">
+                            <Label Text="{Binding StreakLabel}" Style="{StaticResource LabelStrong}" />
+                            <Label Text="Série en cours" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource Card}" IsVisible="{Binding HasResult}">
+                <VerticalStackLayout Spacing="8">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <Label Text="{StaticResource IconPsychology}" FontFamily="MaterialSymbols" FontSize="20"
+                               TextColor="{StaticResource PrimaryTint}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="Le mot du coach" Style="{StaticResource LabelStrong}"
+                               VerticalOptions="Center" />
+                    </Grid>
+                    <Label Text="{Binding Encouragement}" Style="{StaticResource Body}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="Retour à l'accueil" Style="{StaticResource PrimaryButton}" Command="{Binding DoneCommand}"
+                    IsVisible="{Binding HasResult}" />
+            <Button Text="Nouvelle session" Style="{StaticResource SecondaryButton}" Command="{Binding NewSessionCommand}"
+                    IsVisible="{Binding HasResult}" />
+
+            <!-- Aucun bilan -->
+            <Border Style="{StaticResource Card}" IsVisible="{Binding HasResult, Converter={StaticResource InvertBool}}">
+                <VerticalStackLayout Spacing="8" Padding="0,20" HorizontalOptions="Center">
+                    <Label Text="{StaticResource IconInsights}" FontFamily="MaterialSymbols" FontSize="36"
+                           TextColor="{AppThemeBinding Light={StaticResource LightTextMuted}, Dark={StaticResource DarkTextMuted}}" HorizontalOptions="Center" />
+                    <Label Text="Aucune session récente" Style="{StaticResource LabelStrong}" HorizontalTextAlignment="Center" />
+                    <Label Text="Lance une révision pour voir ton bilan ici." Style="{StaticResource Caption}"
+                           HorizontalTextAlignment="Center" />
+                    <Button Text="Réviser" Style="{StaticResource PillButton}" Command="{Binding NewSessionCommand}" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

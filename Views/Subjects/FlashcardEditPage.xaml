@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.Subjects.FlashcardEditPage"
+             x:DataType="vm:FlashcardEditViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="{Binding HeaderTitle}" Style="{StaticResource Title}" VerticalOptions="Center" />
+            <Button Grid.Column="2" Text="{StaticResource IconDelete}" Style="{StaticResource IconButton}"
+                    TextColor="{StaticResource Danger}" IsVisible="{Binding IsNew, Converter={StaticResource InvertBool}}"
+                    Command="{Binding DeleteCommand}" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,4,16,32" Spacing="16">
+
+                <Border Style="{StaticResource CardLarge}">
+                    <VerticalStackLayout Spacing="14">
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Question" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}" Padding="12,8">
+                                <Editor Text="{Binding Question}" Placeholder="Quelle notion veux-tu mémoriser ?"
+                                        AutoSize="TextChanges" HeightRequest="96" MaxLength="500" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Réponse" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}" Padding="12,8">
+                                <Editor Text="{Binding Answer}" Placeholder="La réponse attendue, courte et précise…"
+                                        AutoSize="TextChanges" HeightRequest="110" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Astuce mnémotechnique (optionnel)" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Entry Text="{Binding Hint}" Placeholder="Un moyen de retrouver l'idée" MaxLength="300" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Difficulté" Style="{StaticResource Caption}" />
+                                <Border Style="{StaticResource InputWrap}">
+                                    <Picker ItemsSource="{Binding DifficultyOptions}"
+                                            SelectedIndex="{Binding DifficultyIndex}" />
+                                </Border>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="6">
+                                <Label Text="Tags" Style="{StaticResource Caption}" />
+                                <Border Style="{StaticResource InputWrap}">
+                                    <Entry Text="{Binding Tags}" Placeholder="Algèbre, Chapitre 2…" MaxLength="300" />
+                                </Border>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Explication IA -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                            <Label Text="{StaticResource IconAutoAwesome}" Style="{StaticResource Icon}" FontSize="20"
+                                   TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Expliquer avec l'IA" Style="{StaticResource LabelStrong}" />
+                                <Label Text="Une reformulation + une astuce de mémorisation" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="2" Text="Expliquer" Style="{StaticResource PillButton}"
+                                    IsEnabled="{Binding CanExplain}" Command="{Binding ExplainCommand}" />
+                        </Grid>
+
+                        <ActivityIndicator IsRunning="{Binding IsExplaining}" IsVisible="{Binding IsExplaining}" />
+                        <Border BackgroundColor="{StaticResource SecondaryTint}" Stroke="{StaticResource Secondary}"
+                                Padding="12" IsVisible="{Binding HasExplanation}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
+                            <Label Text="{Binding Explanation}" Style="{StaticResource Body}" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Button Text="Enregistrer la carte" Style="{StaticResource PrimaryButton}"
+                        Command="{Binding SaveCommand}" />
+
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                        BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}" TextColor="{StaticResource Danger}" />
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

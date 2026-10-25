@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             xmlns:controls="clr-namespace:FlashRevise.Controls"
+             x:Class="FlashRevise.Views.AI.AiLoadingPage"
+             x:DataType="vm:AiLoadingViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    IsEnabled="{Binding IsRunning, Converter={StaticResource InvertBool}}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="Génération en cours" Style="{StaticResource Title}" VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="24,16,24,32" Spacing="20" VerticalOptions="Center">
+
+                <!-- Anneau de progression -->
+                <Grid WidthRequest="220" HeightRequest="220" HorizontalOptions="Center">
+                    <Ellipse Fill="{StaticResource PrimaryTintSoft}" Opacity="0.5" />
+                    <controls:RingProgress Progress="{Binding Progress}" Caption="{Binding ProgressCaption}"
+                                           RingColor="{StaticResource Primary}"
+                                           TrackColor="{AppThemeBinding Light={StaticResource LightBorderStrong}, Dark={StaticResource DarkBorderStrong}}"
+                                           StrokeSize="12"
+                                           CaptionColor="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}"
+                                           HeightRequest="220" WidthRequest="220" />
+                </Grid>
+
+                <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                    <Label Text="{Binding StatusText}" Style="{StaticResource Headline}" FontSize="22"
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="L'IA structure tes cartes. Garde l'app ouverte quelques secondes."
+                           Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <!-- Contexte -->
+                <Border Style="{StaticResource CardLarge}">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Label Text="{StaticResource IconMenuBook}" Style="{StaticResource Icon}" FontSize="20"
+                                   TextColor="{StaticResource PrimaryTint}" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Matière" Style="{StaticResource Caption}" />
+                                <Label Text="{Binding SubjectName}" Style="{StaticResource LabelStrong}" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <BoxView Style="{StaticResource Divider}" />
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Label Text="{StaticResource IconDescription}" Style="{StaticResource Icon}" FontSize="20"
+                                   TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Source" Style="{StaticResource Caption}" />
+                                <Label Text="{Binding SourceLabel}" Style="{StaticResource LabelStrong}" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <BoxView Style="{StaticResource Divider}" />
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Label Text="{StaticResource IconStyle}" Style="{StaticResource Icon}" FontSize="20"
+                                   TextColor="{StaticResource Tertiary}" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Commande" Style="{StaticResource Caption}" />
+                                <Label Text="{Binding RequestLabel}" Style="{StaticResource LabelStrong}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <ActivityIndicator IsRunning="{Binding IsRunning}" IsVisible="{Binding IsRunning}"
+                                   Color="{StaticResource Primary}" />
+
+                <Button Text="Annuler" Style="{StaticResource GhostButton}"
+                        IsVisible="{Binding IsRunning}" Command="{Binding CancelCommand}" />
+
+                <!-- Erreur -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                        BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Label Text="{StaticResource IconError}" Style="{StaticResource Icon}" FontSize="20"
+                                   TextColor="{StaticResource Danger}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="La génération n'a pas abouti" Style="{StaticResource LabelStrong}"
+                                   TextColor="{StaticResource Danger}" VerticalOptions="Center" />
+                        </Grid>
+                        <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}"
+                               TextColor="{StaticResource Danger}" />
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <Button Text="Réessayer" Style="{StaticResource PrimaryButton}" HeightRequest="46"
+                                    IsVisible="{Binding CanRetry}" Command="{Binding RetryCommand}" />
+                            <Button Grid.Column="1" Text="Revenir" Style="{StaticResource SecondaryButton}"
+                                    HeightRequest="46" Command="{Binding GoBackCommand}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label Text="Astuce : si tu quittes l'app, la génération reprend au prochain lancement depuis le job enregistré."
+                       Style="{StaticResource Caption}" FontSize="11" HorizontalTextAlignment="Center" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

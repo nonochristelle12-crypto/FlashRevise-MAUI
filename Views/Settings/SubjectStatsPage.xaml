@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             xmlns:controls="clr-namespace:FlashRevise.Controls"
+             x:Class="FlashRevise.Views.Settings.SubjectStatsPage"
+             x:DataType="vm:SubjectStatsViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="{Binding SubjectName}" Style="{StaticResource Title}"
+                   VerticalOptions="Center" LineBreakMode="TailTruncation" />
+            <Button Grid.Column="2" Text="{StaticResource IconEdit}" Style="{StaticResource IconButton}"
+                    Command="{Binding EditSubjectCommand}" />
+        </Grid>
+
+        <RefreshView Grid.Row="1" Command="{Binding LoadCommand}" RefreshColor="{StaticResource Primary}">
+            <ScrollView>
+                <VerticalStackLayout Padding="16,4,16,32" Spacing="16">
+
+                    <!-- Maîtrise -->
+                    <Border Style="{StaticResource CardLarge}">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18">
+                            <controls:RingProgress Progress="{Binding MasteryRatio}" Caption="{Binding MasteryLabel}"
+                                                   RingColor="{Binding AccentColor}"
+                                                   TrackColor="{AppThemeBinding Light={StaticResource LightBorder}, Dark={StaticResource DarkBorder}}"
+                                                   CaptionColor="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}"
+                                                   WidthRequest="116" HeightRequest="116" StrokeSize="10" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                <Label Text="Maîtrise de la matière" Style="{StaticResource LabelStrong}" />
+                                <Label Text="{Binding MasteryLabel, StringFormat='{0} des cartes sont maîtrisées'}"
+                                       Style="{StaticResource Caption}" />
+                                <Label Text="{Binding LastReviewedLabel}" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+
+                    <!-- KPI -->
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                        <Border Style="{StaticResource Card}" Padding="14">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding TotalLabel}" Style="{StaticResource Headline}" FontSize="24" />
+                                <Label Text="Cartes au total" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Column="1" Style="{StaticResource Card}" Padding="14">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding DueLabel}" Style="{StaticResource Headline}" FontSize="24"
+                                       TextColor="{StaticResource Warning}" />
+                                <Label Text="À réviser aujourd'hui" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Row="1" Style="{StaticResource Card}" Padding="14">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding MasteredLabel}" Style="{StaticResource Headline}" FontSize="24"
+                                       TextColor="{StaticResource Tertiary}" />
+                                <Label Text="Maîtrisées" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource Card}" Padding="14">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding TodayLabel}" Style="{StaticResource Headline}" FontSize="24"
+                                       TextColor="{StaticResource Secondary}" />
+                                <Label Text="Révisées aujourd'hui" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <!-- Actions -->
+                    <Button Text="Lancer une session" Style="{StaticResource PrimaryButton}"
+                            Command="{Binding ReviewNowCommand}" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Button Text="Planifier un rappel" Style="{StaticResource SecondaryButton}" HeightRequest="46"
+                                Command="{Binding RemindersCommand}" />
+                        <Button Grid.Column="1" Text="Modifier la matière" Style="{StaticResource GhostButton}"
+                                HeightRequest="46" Command="{Binding EditSubjectCommand}" />
+                    </Grid>
+
+                    <!-- Historique -->
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Sessions récentes" Style="{StaticResource Overline}" />
+
+                        <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding History}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:SessionHistoryRow">
+                                    <Border Style="{StaticResource Card}" Padding="12">
+                                        <VerticalStackLayout Spacing="8">
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                <VerticalStackLayout Spacing="2">
+                                                    <Label Text="{Binding DateLabel}" Style="{StaticResource LabelStrong}" />
+                                                    <Label Text="{Binding CardsLabel}" Style="{StaticResource Caption}" />
+                                                </VerticalStackLayout>
+                                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                                    <Label Text="{Binding AccuracyLabel}" Style="{StaticResource Title}" FontSize="16"
+                                                           HorizontalTextAlignment="End"
+                                                           TextColor="{StaticResource Tertiary}" />
+                                                    <Label Text="{Binding DurationLabel}" Style="{StaticResource Caption}"
+                                                           HorizontalTextAlignment="End" />
+                                                </VerticalStackLayout>
+                                            </Grid>
+                                            <ProgressBar Progress="{Binding AccuracyRatio}" HeightRequest="6"
+                                                         ProgressColor="{StaticResource Tertiary}" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <Border Style="{StaticResource Card}" IsVisible="{Binding HasHistory, Converter={StaticResource InvertBool}}">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Pas encore de session terminée" Style="{StaticResource LabelStrong}" />
+                                <Label Text="Termine une session pour voir ton taux de réussite et ton historique ici."
+                                       Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                            BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                        <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}"
+                               TextColor="{StaticResource Danger}" />
+                    </Border>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

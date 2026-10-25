@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.Settings.RemindersPage"
+             x:DataType="vm:RemindersViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="Rappels" Style="{StaticResource Title}" VerticalOptions="Center" />
+            <Button Grid.Column="2" Text="{StaticResource IconNotificationAdd}" Style="{StaticResource IconButton}"
+                    TextColor="{StaticResource Primary}" Command="{Binding AddCommand}" />
+        </Grid>
+
+        <RefreshView Grid.Row="1" Command="{Binding LoadCommand}" RefreshColor="{StaticResource Primary}">
+            <ScrollView>
+                <VerticalStackLayout Padding="16,4,16,32" Spacing="14">
+
+                    <Border Style="{StaticResource CardLarge}" Background="{StaticResource PriorityGradient}"
+                            StrokeThickness="0">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Rappels intelligents" Style="{StaticResource Overline}" TextColor="White" />
+                            <Label Text="Choisis un moment, laisse l'appareil te rappeler de réviser."
+                                   Style="{StaticResource Headline}" FontSize="21" TextColor="White" />
+                            <Label Text="Chaque rappel ouvre directement la session de la matière concernée."
+                                   Style="{StaticResource Caption}" TextColor="#D9FFFFFF" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                                       Color="{StaticResource Primary}" />
+
+                    <!-- Liste -->
+                    <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Rows}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ReminderRow">
+                                <Border Style="{StaticResource Card}" Padding="14">
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+
+                                        <Border WidthRequest="54" HeightRequest="54" StrokeThickness="0"
+                                                BackgroundColor="{StaticResource PrimaryTintSoft}"
+                                                VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="16" />
+                                            </Border.StrokeShape>
+                                            <VerticalStackLayout Spacing="0" VerticalOptions="Center">
+                                                <Label Text="{Binding TimeLabel}" Style="{StaticResource Title}" FontSize="17"
+                                                       TextColor="{StaticResource PrimaryTint}" HorizontalTextAlignment="Center" />
+                                            </VerticalStackLayout>
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                            <Label Text="{Binding SubjectName}" Style="{StaticResource LabelStrong}"
+                                                   LineBreakMode="TailTruncation" />
+                                            <Label Text="{Binding RepeatLabel}" Style="{StaticResource Caption}" />
+                                            <Label Text="{Binding StatusLabel}" Style="{StaticResource Caption}" FontSize="11"
+                                                   TextColor="{StaticResource Secondary}" />
+                                        </VerticalStackLayout>
+
+                                        <Switch Grid.Column="2" IsToggled="{Binding IsEnabled, Mode=OneWay}"
+                                                VerticalOptions="Center" Toggled="OnReminderToggled" />
+
+                                        <Button Grid.Column="3" Text="{StaticResource IconDelete}" Style="{StaticResource IconButton}"
+                                                TextColor="{StaticResource Danger}" CommandParameter="{Binding .}"
+                                                Clicked="OnDeleteClicked" />
+                                    </Grid>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnReminderTapped" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <!-- Vide -->
+                    <Border Style="{StaticResource CardLarge}"
+                            IsVisible="{Binding HasReminders, Converter={StaticResource InvertBool}}">
+                        <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                            <Label Text="{StaticResource IconAlarm}" Style="{StaticResource Icon}" FontSize="36"
+                                   TextColor="{StaticResource TextMuted}" HorizontalOptions="Center" />
+                            <Label Text="Aucun rappel planifié" Style="{StaticResource Title}" FontSize="18"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Programme un rappel quotidien ou hebdomadaire pour ne plus oublier tes révisions."
+                                   Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
+                            <Button Text="Créer un rappel" Style="{StaticResource PrimaryButton}" HeightRequest="46"
+                                    Command="{Binding AddCommand}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                            BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                        <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}"
+                               TextColor="{StaticResource Danger}" />
+                    </Border>
+
+                    <Label Text="Appuie sur un rappel pour modifier son heure ou sa fréquence."
+                           Style="{StaticResource Caption}" FontSize="11" HorizontalTextAlignment="Center" />
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

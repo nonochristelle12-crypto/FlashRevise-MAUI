@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:tabs="clr-namespace:FlashRevise.Views.Tabs"
+             x:Class="FlashRevise.Views.MainTabsPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- Contenu des onglets -->
+        <Grid Grid.Row="0">
+            <tabs:HomeTabView x:Name="HomeTab" />
+            <tabs:SubjectsTabView x:Name="SubjectsTab" IsVisible="False" />
+            <tabs:StatsTabView x:Name="StatsTab" IsVisible="False" />
+            <tabs:ProfileTabView x:Name="ProfileTab" IsVisible="False" />
+        </Grid>
+
+        <!-- Barre d'onglets custom + FAB central -->
+        <Grid Grid.Row="1" HeightRequest="96" ZIndex="20">
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource LightOverlay}, Dark={StaticResource DarkOverlay}}"
+                    Stroke="{StaticResource Hairline}"
+                    StrokeThickness="1"
+                    Padding="8,10,8,20">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="0" />
+                </Border.StrokeShape>
+
+                <Grid ColumnDefinitions="*,*,Auto,*,*" ColumnSpacing="0">
+                    <VerticalStackLayout Grid.Column="0" x:Name="HomeTabButton" Spacing="2" HorizontalOptions="Center">
+                        <Label x:Name="HomeTabIcon" Text="{StaticResource IconHome}" Style="{StaticResource Icon}" />
+                        <Label x:Name="HomeTabLabel" Text="Accueil" Style="{StaticResource Caption}" FontSize="10" HorizontalTextAlignment="Center" />
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnHomeTabTapped" />
+                        </VerticalStackLayout.GestureRecognizers>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1" x:Name="SubjectsTabButton" Spacing="2" HorizontalOptions="Center">
+                        <Label x:Name="SubjectsTabIcon" Text="{StaticResource IconMenuBook}" Style="{StaticResource Icon}" />
+                        <Label x:Name="SubjectsTabLabel" Text="Matières" Style="{StaticResource Caption}" FontSize="10" HorizontalTextAlignment="Center" />
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnSubjectsTabTapped" />
+                        </VerticalStackLayout.GestureRecognizers>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="2" WidthRequest="64" />
+
+                    <VerticalStackLayout Grid.Column="3" x:Name="StatsTabButton" Spacing="2" HorizontalOptions="Center">
+                        <Label x:Name="StatsTabIcon" Text="{StaticResource IconInsights}" Style="{StaticResource Icon}" />
+                        <Label x:Name="StatsTabLabel" Text="Progrès" Style="{StaticResource Caption}" FontSize="10" HorizontalTextAlignment="Center" />
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnStatsTabTapped" />
+                        </VerticalStackLayout.GestureRecognizers>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="4" x:Name="ProfileTabButton" Spacing="2" HorizontalOptions="Center">
+                        <Label x:Name="ProfileTabIcon" Text="{StaticResource IconPerson}" Style="{StaticResource Icon}" />
+                        <Label x:Name="ProfileTabLabel" Text="Profil" Style="{StaticResource Caption}" FontSize="10" HorizontalTextAlignment="Center" />
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnProfileTabTapped" />
+                        </VerticalStackLayout.GestureRecognizers>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- FAB Revise -->
+            <Border WidthRequest="64" HeightRequest="64"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Start"
+                    TranslationY="-26"
+                    Background="{StaticResource PriorityGradient}"
+                    Stroke="{StaticResource PrimaryTint}"
+                    StrokeThickness="1"
+                    Shadow="{StaticResource FloatingShadow}"
+                    SemanticProperties.Description="Démarrer une révision">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="32" />
+                </Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnReviseTapped" />
+                </Border.GestureRecognizers>
+                <Label Text="{StaticResource IconBolt}"
+                       FontFamily="MaterialSymbols"
+                       FontSize="28"
+                       TextColor="White"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

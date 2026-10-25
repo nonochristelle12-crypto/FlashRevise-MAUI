@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.OnboardingPage"
+             x:DataType="vm:OnboardingViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" IsEnabled="False" />
+    </Shell.BackButtonBehavior>
+
+    <Grid>
+        <!-- Décor : hors flux de mise en page pour ne pas gonfler la ligne d'en-tête -->
+        <AbsoluteLayout InputTransparent="True">
+            <Ellipse AbsoluteLayout.LayoutBounds="0.5,-0.28,320,320"
+                     AbsoluteLayout.LayoutFlags="PositionProportional"
+                     Fill="{StaticResource PrimaryTintSoft}" Opacity="0.7" />
+        </AbsoluteLayout>
+
+        <Grid RowDefinitions="Auto,*,Auto" Padding="20,16,20,28">
+
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto">
+                <Border Style="{StaticResource LogoBadge}" WidthRequest="40" HeightRequest="40">
+                    <Label Text="{StaticResource IconBolt}" FontFamily="MaterialSymbols" FontSize="22" TextColor="White"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <Label Grid.Column="1" Text="FlashRevise" Style="{StaticResource Title}" VerticalOptions="Center"
+                       Margin="10,0,0,0" />
+                <Button Grid.Column="2" Text="Passer" Style="{StaticResource GhostButton}"
+                        Command="{Binding SkipCommand}" HorizontalOptions="End" />
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.GestureRecognizers>
+                    <SwipeGestureRecognizer Direction="Left" Command="{Binding NextCommand}" />
+                    <SwipeGestureRecognizer Direction="Right" Command="{Binding PreviousCommand}" />
+                </Grid.GestureRecognizers>
+
+                <VerticalStackLayout Spacing="18" Padding="4" VerticalOptions="Center">
+                    <Border WidthRequest="96" HeightRequest="96" BackgroundColor="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}"
+                            Stroke="{StaticResource Hairline}" StrokeThickness="1" HorizontalOptions="Start">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="28" />
+                        </Border.StrokeShape>
+                        <Label Text="{Binding CurrentSlide.Icon}" FontFamily="MaterialSymbols" FontSize="44"
+                               TextColor="{Binding CurrentSlide.Accent}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+
+                    <Border Style="{StaticResource Chip}" HorizontalOptions="Start"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceTintLight}, Dark={StaticResource SurfaceTintDark}}">
+                        <Label Text="{Binding CurrentSlide.Badge}" Style="{StaticResource ChipLabel}"
+                               TextColor="{Binding CurrentSlide.Accent}" />
+                    </Border>
+
+                    <Label Text="{Binding CurrentSlide.Title}" Style="{StaticResource Display}" FontSize="34"
+                           TextColor="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
+                    <Label Text="{Binding CurrentSlide.Description}" Style="{StaticResource BodyLarge}" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <VerticalStackLayout Grid.Row="2" Spacing="20">
+                <IndicatorView x:Name="Indicators"
+                               ItemsSource="{Binding Slides}"
+                               Position="{Binding Position}"
+                               HorizontalOptions="Center"
+                               IndicatorColor="{AppThemeBinding Light={StaticResource LightBorderStrong}, Dark={StaticResource DarkBorderStrong}}"
+                               SelectedIndicatorColor="{StaticResource Primary}"
+                               IndicatorSize="8" />
+
+                <Button Text="{Binding PrimaryActionLabel}" Style="{StaticResource PrimaryButton}"
+                        Command="{Binding NextCommand}" />
+                <Label Text="Tu pourras revenir sur ces réglages dans ton profil."
+                       Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

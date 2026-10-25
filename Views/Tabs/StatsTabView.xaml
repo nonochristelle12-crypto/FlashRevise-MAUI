@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             xmlns:models="clr-namespace:FlashRevise.Models"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
+             x:Class="FlashRevise.Views.Tabs.StatsTabView"
+             x:DataType="vm:StatsViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <RefreshView Command="{Binding LoadCommand}" RefreshColor="{StaticResource Primary}">
+        <ScrollView>
+            <VerticalStackLayout Padding="16,12,16,96" Spacing="16">
+
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Progression" Style="{StaticResource Headline}" />
+                        <Label Text="Ta mémoire, semaine après semaine" Style="{StaticResource Caption}" />
+                    </VerticalStackLayout>
+                    <Button Grid.Column="1" Text="{StaticResource IconMilitaryTech}"
+                            Style="{StaticResource IconButton}"
+                            Command="{Binding OpenAchievementsCommand}" />
+                </Grid>
+
+                <!-- Héro série -->
+                <Border Style="{StaticResource CardLarge}" Background="{StaticResource StreakGradient}" StrokeThickness="0"
+                        Shadow="{StaticResource FloatingShadow}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Série en cours" Style="{StaticResource Overline}" TextColor="#E6FFFFFF" />
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="{Binding CurrentStreak}" Style="{StaticResource Display}" FontSize="42" TextColor="White" />
+                                <Label Text="jours" Style="{StaticResource Body}" TextColor="#E6FFFFFF" VerticalOptions="End" Margin="0,0,0,8" />
+                            </HorizontalStackLayout>
+                            <Label Text="{Binding XpLabel, StringFormat='{0} cumulés · continue comme ça !'}"
+                                   Style="{StaticResource Caption}" TextColor="#E6FFFFFF" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="1" Text="{StaticResource IconLocalFireDepartment}" FontFamily="MaterialSymbols"
+                               FontSize="52" TextColor="#66FFFFFF" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- KPI -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <Border Style="{StaticResource Card}" Padding="12">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding TotalReviews}" Style="{StaticResource Title}" FontSize="22" />
+                            <Label Text="Cartes · 7 j" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource Card}" Padding="12">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding MasteredCards}" Style="{StaticResource Title}" FontSize="22"
+                                   TextColor="{StaticResource Tertiary}" />
+                            <Label Text="Maîtrisées" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2" Style="{StaticResource Card}" Padding="12">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding AccuracyLabel}" Style="{StaticResource Title}" FontSize="22"
+                                   TextColor="{StaticResource Secondary}" />
+                            <Label Text="Rétention" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Activité -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Activité récente" Style="{StaticResource LabelStrong}" />
+                            <Border Grid.Column="1" Style="{StaticResource Chip}" Padding="8,2">
+                                <Label Text="7 derniers jours" Style="{StaticResource ChipLabel}" />
+                            </Border>
+                        </Grid>
+                        <lvc:CartesianChart Series="{Binding ReviewsSeries}"
+                                            XAxes="{Binding ReviewXAxes}"
+                                            YAxes="{Binding ReviewYAxes}"
+                                            HeightRequest="170" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Rétention -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Courbe de rétention" Style="{StaticResource LabelStrong}" />
+                            <Label Grid.Column="1" Text="{Binding AccuracyLabel}" Style="{StaticResource Caption}"
+                                   TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                        </Grid>
+                        <lvc:CartesianChart Series="{Binding AccuracySeries}"
+                                            XAxes="{Binding AccuracyXAxes}"
+                                            YAxes="{Binding AccuracyYAxes}"
+                                            HeightRequest="150" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Objectifs -->
+                <Border Style="{StaticResource Card}">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Label Text="{StaticResource IconFlag}" Style="{StaticResource Icon}" FontSize="24"
+                               TextColor="{StaticResource PrimaryTint}" VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label Text="Objectifs &amp; livres" Style="{StaticResource LabelStrong}" />
+                            <Label Text="Planifie tes chapitres et suis ton avancement" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="2" Text="{StaticResource IconChevronRight}" Style="{StaticResource IconButton}"
+                                Command="{Binding OpenGoalsCommand}" />
+                    </Grid>
+                </Border>
+
+                <!-- Maîtrise par matière -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="Maîtrise par matière" Style="{StaticResource Title}" FontSize="17" />
+                    <Label Grid.Column="1" Text="{Binding Subjects.Count, StringFormat='{0} matières'}"
+                           Style="{StaticResource Caption}" VerticalOptions="Center" />
+                </Grid>
+
+                <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Subjects}"
+                                     IsVisible="{Binding HasSubjects}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:SubjectStats">
+                            <Border Style="{StaticResource Card}" Padding="14">
+                                <VerticalStackLayout Spacing="8">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                        <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5"
+                                                 Color="{Binding AccentColor}" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="{Binding SubjectName}" Style="{StaticResource LabelStrong}" />
+                                        <Label Grid.Column="2" Text="{Binding MasteryRatio, StringFormat='{0:P0}'}"
+                                               Style="{StaticResource Caption}" VerticalOptions="Center" />
+                                    </Grid>
+                                    <ProgressBar Progress="{Binding MasteryRatio}" HeightRequest="6" />
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="{Binding TotalCards, StringFormat='{0} cartes'}" Style="{StaticResource Caption}" />
+                                        <Label Grid.Column="1" Text="{Binding DueCards, StringFormat='{0} à réviser'}"
+                                               Style="{StaticResource Caption}" TextColor="{StaticResource Warning}" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnSubjectStatsTapped" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasSubjects, Converter={StaticResource InvertBool}}">
+                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Padding="0,12">
+                        <Label Text="{StaticResource IconInsights}" FontFamily="MaterialSymbols" FontSize="32"
+                               TextColor="{AppThemeBinding Light={StaticResource LightTextMuted}, Dark={StaticResource DarkTextMuted}}" HorizontalOptions="Center" />
+                        <Label Text="Pas encore de données" Style="{StaticResource LabelStrong}" HorizontalTextAlignment="Center" />
+                        <Label Text="Termine une session de révision pour voir ta progression ici."
+                               Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                        BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}" TextColor="{StaticResource Danger}" />
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentView>

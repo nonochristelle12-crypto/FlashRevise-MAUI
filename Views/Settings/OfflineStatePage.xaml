@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.Settings.OfflineStatePage"
+             x:DataType="vm:OfflineStateViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="Mode hors-ligne" Style="{StaticResource Title}" VerticalOptions="Center" />
+            <Button Grid.Column="2" Text="{StaticResource IconRefresh}" Style="{StaticResource IconButton}"
+                    Command="{Binding RefreshCommand}" />
+        </Grid>
+
+        <RefreshView Grid.Row="1" Command="{Binding LoadCommand}" RefreshColor="{StaticResource Primary}">
+            <ScrollView>
+                <VerticalStackLayout Padding="16,4,16,32" Spacing="16">
+
+                    <!-- État réseau -->
+                    <Border Style="{StaticResource CardLarge}" StrokeThickness="0"
+                            Background="{StaticResource PriorityGradient}" Shadow="{StaticResource FloatingShadow}">
+                        <VerticalStackLayout Spacing="12">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <Border WidthRequest="52" HeightRequest="52" StrokeThickness="0"
+                                        BackgroundColor="#33FFFFFF" VerticalOptions="Center">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="16" />
+                                    </Border.StrokeShape>
+                                    <Label Style="{StaticResource Icon}" FontSize="26" TextColor="White"
+                                           HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsOnline}" Value="True">
+                                                <Setter Property="Text" Value="{StaticResource IconCloudDone}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsOnline}" Value="False">
+                                                <Setter Property="Text" Value="{StaticResource IconCloudOff}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                    <Label Text="{Binding StatusTitle}" Style="{StaticResource Headline}" FontSize="24"
+                                           TextColor="White" />
+                                    <Label Text="{Binding PendingLabel}" Style="{StaticResource Caption}"
+                                           TextColor="#D9FFFFFF" />
+                                </VerticalStackLayout>
+                            </Grid>
+                            <Label Text="{Binding StatusDetail}" Style="{StaticResource Caption}" TextColor="#E6FFFFFF" />
+                            <Button Text="Synchroniser maintenant" Style="{StaticResource PillButton}"
+                                    IsEnabled="{Binding CanSync}" Command="{Binding SyncNowCommand}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <ActivityIndicator IsRunning="{Binding IsSyncing}" IsVisible="{Binding IsSyncing}"
+                                       Color="{StaticResource Primary}" />
+
+                    <Border Style="{StaticResource Card}" Padding="14">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Label Text="{StaticResource IconSync}" Style="{StaticResource Icon}" FontSize="20"
+                                   TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="{Binding RemoteLabel}" Style="{StaticResource LabelStrong}" />
+                                <Label Text="Les révisions, cartes et rappels restent stockés localement en SQLite, même sans connexion."
+                                       Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+
+                    <!-- File d'attente -->
+                    <Label Text="Opérations en attente" Style="{StaticResource Overline}" />
+
+                    <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Operations}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:PendingOperationRow">
+                                <Border Style="{StaticResource Card}" Padding="12">
+                                    <VerticalStackLayout Spacing="6">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="{Binding EntityLabel}" Style="{StaticResource LabelStrong}" />
+                                                <Border Style="{StaticResource Chip}" Padding="8,2"
+                                                        BackgroundColor="{StaticResource PrimaryTintSoft}"
+                                                        Stroke="{StaticResource Primary}" VerticalOptions="Center">
+                                                    <Label Text="{Binding OperationLabel}" Style="{StaticResource ChipLabel}"
+                                                           TextColor="{StaticResource PrimaryTint}" />
+                                                </Border>
+                                            </HorizontalStackLayout>
+                                            <Label Grid.Column="1" Text="{Binding QueuedLabel}" Style="{StaticResource Caption}" />
+                                        </Grid>
+                                        <Label Text="{Binding AttemptsLabel}" Style="{StaticResource Caption}" FontSize="11"
+                                               IsVisible="{Binding AttemptsLabel, Converter={StaticResource IsStringNotEmpty}}" />
+                                        <Label Text="{Binding ErrorLabel}" Style="{StaticResource Caption}" FontSize="11"
+                                               TextColor="{StaticResource Danger}" IsVisible="{Binding HasError}" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <Border Style="{StaticResource CardLarge}"
+                            IsVisible="{Binding HasOperations, Converter={StaticResource InvertBool}}">
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label Text="{StaticResource IconCheckCircle}" Style="{StaticResource Icon}" FontSize="32"
+                                   TextColor="{StaticResource Tertiary}" HorizontalOptions="Center" />
+                            <Label Text="{Binding EmptyLabel}" Style="{StaticResource Caption}"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" IsVisible="{Binding HasStatusMessage}"
+                            BackgroundColor="{StaticResource TertiaryTint}" Stroke="{StaticResource Tertiary}">
+                        <Label Text="{Binding StatusMessage}" Style="{StaticResource Caption}"
+                               TextColor="{StaticResource Tertiary}" />
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                            BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                        <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}"
+                               TextColor="{StaticResource Danger}" />
+                    </Border>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

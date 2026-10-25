@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.AI.AiUploadPage"
+             x:DataType="vm:AiUploadViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="Générer avec l'IA" Style="{StaticResource Title}" VerticalOptions="Center" />
+            <Button Grid.Column="2" Text="{StaticResource IconSmartToy}" Style="{StaticResource IconButton}"
+                    TextColor="{StaticResource Secondary}" Command="{Binding OpenChatCommand}" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,4,16,32" Spacing="16">
+
+                <!-- Héro IA -->
+                <Border Style="{StaticResource CardLarge}" Background="{StaticResource PrimaryGradient}"
+                        StrokeThickness="0" Shadow="{StaticResource FloatingShadow}">
+                    <VerticalStackLayout Spacing="10">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="{StaticResource IconAutoAwesome}" FontFamily="MaterialSymbols" FontSize="22"
+                                   TextColor="White" />
+                            <Label Text="IA Studio" Style="{StaticResource Overline}" TextColor="White"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                        <Label Text="Transforme ton cours en cartes prêtes à réviser." Style="{StaticResource Headline}"
+                               FontSize="22" TextColor="White" />
+                        <Label Text="Colle un texte ou importe un PDF : l'IA propose des cartes, tu gardes la main sur ce qui est enregistré."
+                               Style="{StaticResource Caption}" TextColor="#D9FFFFFF" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Clé absente -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasApiKey, Converter={StaticResource InvertBool}}"
+                        BackgroundColor="{StaticResource WarningTint}" Stroke="{StaticResource Warning}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Label Text="{StaticResource IconKey}" Style="{StaticResource Icon}" FontSize="20"
+                               TextColor="{StaticResource Warning}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="Aucune clé API configurée. Ouvre Profil › Clé API IA pour activer la génération."
+                               Style="{StaticResource Caption}" TextColor="{StaticResource Warning}"
+                               VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Matières absentes -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasSubjects, Converter={StaticResource InvertBool}}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Aucune matière pour l'instant" Style="{StaticResource LabelStrong}" />
+                        <Label Text="Les cartes générées doivent être rangées dans une matière. Crée ta première matière en quelques secondes."
+                               Style="{StaticResource Caption}" />
+                        <Button Text="Créer une matière" Style="{StaticResource SecondaryButton}" HeightRequest="46"
+                                Command="{Binding AddSubjectCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Source -->
+                <Border Style="{StaticResource CardLarge}">
+                    <VerticalStackLayout Spacing="14">
+
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Label Text="{StaticResource IconUploadFile}" Style="{StaticResource Icon}" FontSize="22"
+                                   TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="Importer un document" Style="{StaticResource LabelStrong}" />
+                                <Label Text="PDF, TXT, MD ou CSV" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="2" IsToggled="{Binding IsFileMode}" VerticalOptions="Center" />
+                        </Grid>
+
+                        <!-- Texte libre -->
+                        <VerticalStackLayout Spacing="8" IsVisible="{Binding IsFileMode, Converter={StaticResource InvertBool}}">
+                            <Border Style="{StaticResource InputWrap}" Padding="12,8">
+                                <Editor Text="{Binding SourceText}"
+                                        Placeholder="Colle ici le contenu de ton cours, tes notes ou un chapitre…"
+                                        AutoSize="TextChanges" HeightRequest="180" MaxLength="20000" />
+                            </Border>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="Plus le texte est précis, meilleures sont les cartes."
+                                       Style="{StaticResource Caption}" />
+                                <Label Grid.Column="1" Text="{Binding TextCounter}" Style="{StaticResource Caption}" />
+                            </Grid>
+                        </VerticalStackLayout>
+
+                        <!-- Fichier -->
+                        <VerticalStackLayout Spacing="10" IsVisible="{Binding IsFileMode}">
+                            <Border Style="{StaticResource Card}" Padding="14"
+                                    Background="{StaticResource InputSurface}">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                    <Label Text="{StaticResource IconDescription}" Style="{StaticResource Icon}" FontSize="24"
+                                           TextColor="{StaticResource PrimaryTint}" VerticalOptions="Center" />
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding FileName}"
+                                               Style="{StaticResource LabelStrong}" LineBreakMode="TailTruncation" />
+                                        <Label Text="{Binding FileMeta}" Style="{StaticResource Caption}" />
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="2" Text="{StaticResource IconClose}" Style="{StaticResource IconButton}"
+                                            IsVisible="{Binding HasFile}" Command="{Binding ClearFileCommand}" />
+                                </Grid>
+                            </Border>
+
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                <Button Text="Choisir un fichier" Style="{StaticResource SecondaryButton}" HeightRequest="46"
+                                        Command="{Binding ImportFileCommand}" />
+                                <Border Grid.Column="1" Style="{StaticResource Chip}" Padding="10,4" VerticalOptions="Center"
+                                        BackgroundColor="{StaticResource SecondaryTint}" Stroke="{StaticResource Secondary}">
+                                    <Label Text="{Binding FileBadge}" Style="{StaticResource ChipLabel}"
+                                           TextColor="{StaticResource Secondary}" />
+                                </Border>
+                            </Grid>
+
+                            <ActivityIndicator IsRunning="{Binding IsExtracting}" IsVisible="{Binding IsExtracting}"
+                                               Color="{StaticResource Primary}" />
+                            <Label Text="Extraction du texte en cours…" Style="{StaticResource Caption}"
+                                   IsVisible="{Binding IsExtracting}" HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Paramètres -->
+                <Border Style="{StaticResource CardLarge}">
+                    <VerticalStackLayout Spacing="16">
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Matière de destination" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Picker ItemsSource="{Binding SubjectNames}"
+                                        SelectedIndex="{Binding SelectedSubjectIndex}"
+                                        Title="Choisis une matière" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Nombre de cartes" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Picker ItemsSource="{Binding CountLabels}"
+                                        SelectedIndex="{Binding SelectedCountIndex}"
+                                        Title="Nombre de cartes" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Button Text="Générer les cartes" Style="{StaticResource PrimaryButton}"
+                                IsEnabled="{Binding IsNotBusy}" Command="{Binding GenerateCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                        BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}" TextColor="{StaticResource Danger}" />
+                </Border>
+
+                <Border Style="{StaticResource Card}" Padding="14">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Label Text="{StaticResource IconShield}" Style="{StaticResource Icon}" FontSize="20"
+                               TextColor="{StaticResource Tertiary}" VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="Tu valides avant d'enregistrer" Style="{StaticResource LabelStrong}" />
+                            <Label Text="Les cartes proposées restent modifiables et supprimables. Ta clé API est stockée dans le coffre sécurisé de l'appareil."
+                                   Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

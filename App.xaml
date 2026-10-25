@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:conv="clr-namespace:FlashRevise.Converters"
+             x:Class="FlashRevise.App"
+             UserAppTheme="Unspecified">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Themes.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Icons.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <conv:IsStringNotEmptyConverter x:Key="IsStringNotEmpty" />
+            <conv:IsPositiveIntConverter x:Key="IsPositiveInt" />
+            <conv:IsNotNullConverter x:Key="IsNotNull" />
+            <conv:EnumEqualsConverter x:Key="EnumEquals" />
+            <conv:InvertBoolConverter x:Key="InvertBool" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.AI.AiReviewPage"
+             x:DataType="vm:AiReviewViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="Valider les cartes" Style="{StaticResource Title}" VerticalOptions="Center" />
+            <Border Grid.Column="2" Style="{StaticResource Chip}" Padding="10,4" BackgroundColor="{StaticResource PrimaryTintSoft}"
+                    Stroke="{StaticResource Primary}" VerticalOptions="Center">
+                <Label Text="{Binding CountLabel}" Style="{StaticResource ChipLabel}" TextColor="{StaticResource PrimaryTint}" />
+            </Border>
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,4,16,24" Spacing="14">
+
+                <!-- Contexte -->
+                <Border Style="{StaticResource CardLarge}" Background="{StaticResource PrimaryGradient}"
+                        StrokeThickness="0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding SubjectName}" Style="{StaticResource Overline}" TextColor="White" />
+                        <Label Text="Relis, ajuste, puis garde seulement les meilleures cartes." Style="{StaticResource Headline}"
+                               FontSize="21" TextColor="White" />
+                        <Label Text="{Binding SourceLabel, StringFormat='Source : {0}'}" Style="{StaticResource Caption}"
+                               TextColor="#D9FFFFFF" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- État enregistré -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding IsSaved}"
+                        BackgroundColor="{StaticResource TertiaryTint}" Stroke="{StaticResource Tertiary}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Label Text="{StaticResource IconCheckCircle}" Style="{StaticResource Icon}" FontSize="22"
+                                   TextColor="{StaticResource Tertiary}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{Binding SavedLabel}" Style="{StaticResource LabelStrong}"
+                                   TextColor="{StaticResource Tertiary}" VerticalOptions="Center" />
+                        </Grid>
+                        <Button Text="Voir la matière" Style="{StaticResource SecondaryButton}" HeightRequest="46"
+                                Command="{Binding ViewSubjectCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Sélection globale -->
+                <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8" IsVisible="{Binding HasCards}">
+                    <Button Text="Tout garder" Style="{StaticResource PillButton}" Command="{Binding SelectAllCommand}" />
+                    <Button Grid.Column="1" Text="Tout retirer" Style="{StaticResource GhostButton}" HeightRequest="36"
+                            Command="{Binding ClearSelectionCommand}" />
+                    <Label Grid.Column="2" Text="{Binding SelectionLabel}" Style="{StaticResource Caption}"
+                           HorizontalTextAlignment="End" VerticalOptions="Center" />
+                </Grid>
+
+                <!-- Cartes proposées -->
+                <VerticalStackLayout Spacing="12" BindableLayout.ItemsSource="{Binding Cards}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:AiReviewItem">
+                            <Border Style="{StaticResource CardLarge}" Padding="14">
+                                <VerticalStackLayout Spacing="12">
+
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                                        <Border Style="{StaticResource Chip}" Padding="8,2"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource LightInput}, Dark={StaticResource DarkInput}}" Stroke="{StaticResource Hairline}">
+                                            <Label Text="{Binding Position, StringFormat='#{0}'}" Style="{StaticResource ChipLabel}" />
+                                        </Border>
+                                        <Label Grid.Column="1" Text="{Binding DifficultyLabel}" Style="{StaticResource Caption}"
+                                               VerticalOptions="Center" />
+                                        <Switch Grid.Column="2" IsToggled="{Binding IsSelected}" VerticalOptions="Center" />
+                                        <Button Grid.Column="3" Text="{StaticResource IconDelete}" Style="{StaticResource IconButton}"
+                                                TextColor="{StaticResource Danger}" CommandParameter="{Binding .}"
+                                                Clicked="OnDeleteClicked" />
+                                    </Grid>
+
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="Question" Style="{StaticResource Overline}" />
+                                        <Border Style="{StaticResource InputWrap}" Padding="10,6">
+                                            <Editor Text="{Binding Question}" AutoSize="TextChanges" HeightRequest="70"
+                                                    MaxLength="500" />
+                                        </Border>
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="Réponse" Style="{StaticResource Overline}" />
+                                        <Border Style="{StaticResource InputWrap}" Padding="10,6">
+                                            <Editor Text="{Binding Answer}" AutoSize="TextChanges" HeightRequest="84" />
+                                        </Border>
+                                    </VerticalStackLayout>
+
+                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                        <VerticalStackLayout Spacing="4">
+                                            <Label Text="Indice" Style="{StaticResource Overline}" />
+                                            <Border Style="{StaticResource InputWrap}">
+                                                <Entry Text="{Binding Hint}" Placeholder="Optionnel" MaxLength="300" />
+                                            </Border>
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                            <Label Text="Difficulté" Style="{StaticResource Overline}" />
+                                            <Border Style="{StaticResource InputWrap}">
+                                                <Picker ItemsSource="{Binding DifficultyOptions}"
+                                                        SelectedIndex="{Binding DifficultyIndex}" />
+                                            </Border>
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
+                        BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}" TextColor="{StaticResource Danger}" />
+                </Border>
+
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasCards}"
+                        BackgroundColor="{StaticResource SecondaryTint}" Stroke="{StaticResource Secondary}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Label Text="{StaticResource IconInfo}" Style="{StaticResource Icon}" FontSize="20"
+                               TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="Chaque carte enregistrée rejoindra la planification SM-2 et reviendra au bon moment."
+                               Style="{StaticResource Caption}" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Barre d'action -->
+        <Border Grid.Row="2" Style="{StaticResource CardFlat}" Padding="16,12"
+                BackgroundColor="{AppThemeBinding Light={StaticResource LightSurface}, Dark={StaticResource DarkSurface}}">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="{Binding SelectionLabel}" Style="{StaticResource Caption}" HorizontalTextAlignment="Center"
+                       IsVisible="{Binding IsSaved, Converter={StaticResource InvertBool}}" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding IsSaved}">
+                    <Button Text="Accueil" Style="{StaticResource SecondaryButton}" HeightRequest="48"
+                            Command="{Binding GoHomeCommand}" />
+                    <Button Grid.Column="1" Text="Voir la matière" Style="{StaticResource PrimaryButton}" HeightRequest="48"
+                            Command="{Binding ViewSubjectCommand}" />
+                </Grid>
+                <Button Text="{Binding SaveButtonLabel}" Style="{StaticResource PrimaryButton}"
+                        IsVisible="{Binding IsSaved, Converter={StaticResource InvertBool}}"
+                        IsEnabled="{Binding HasSelection}" Command="{Binding SaveCommand}" />
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>

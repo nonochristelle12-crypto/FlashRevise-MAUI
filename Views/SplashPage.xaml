@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FlashRevise.Views.SplashPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource DarkCanvas}">
+
+    <Grid>
+        <!-- Halo signature -->
+        <Ellipse Fill="#336C4CF1" WidthRequest="420" HeightRequest="420"
+                 HorizontalOptions="Center" VerticalOptions="Center" Opacity="0.55" />
+        <Ellipse Fill="#1F22D3EE" WidthRequest="240" HeightRequest="240"
+                 HorizontalOptions="Center" VerticalOptions="Center" TranslationY="120" Opacity="0.5" />
+
+        <VerticalStackLayout Spacing="18" HorizontalOptions="Center" VerticalOptions="Center">
+
+            <Border x:Name="LogoMark"
+                    WidthRequest="108" HeightRequest="108"
+                    Background="{StaticResource PrimaryGradient}"
+                    Stroke="#66FFFFFF" StrokeThickness="1"
+                    Shadow="{StaticResource FloatingShadow}"
+                    HorizontalOptions="Center">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="30" />
+                </Border.StrokeShape>
+                <Label Text="{StaticResource IconBolt}" FontFamily="MaterialSymbols" FontSize="56"
+                       TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+
+            <VerticalStackLayout Spacing="6" Margin="0,12,0,0">
+                <Label Text="FlashRevise" Style="{StaticResource Display}" FontSize="38"
+                       TextColor="#E1E1F7" HorizontalTextAlignment="Center" />
+                <Label Text="APPRENDS MOINS. RETIENS PLUS." Style="{StaticResource Overline}"
+                       TextColor="#C9BEFF" HorizontalTextAlignment="Center" CharacterSpacing="2.4" />
+            </VerticalStackLayout>
+
+            <ActivityIndicator IsRunning="True" Color="{StaticResource Secondary}" Margin="0,24,0,0" />
+        </VerticalStackLayout>
+
+        <Label Text="v1.0" Style="{StaticResource Caption}" TextColor="#938EA1"
+               HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,28" />
+    </Grid>
+</ContentPage>

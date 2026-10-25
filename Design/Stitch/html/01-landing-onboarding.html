@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_blank" name="shell-type"/><title>FlashRevise</title><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface": "#101221", "on-tertiary": "#003825", "on-primary-container": "#f0eaff", "primary-fixed-dim": "#c9beff", "surface-variant": "#323444", "tertiary-container": "#007b55", "outline": "#938ea1", "primary-container": "#6c4cf1", "on-primary": "#30009b", "on-primary-fixed": "#1b0062", "error-container": "#93000a", "secondary-container": "#00cbe6", "tertiary": "#45dfa4", "outline-variant": "#484555", "on-secondary": "#00363e", "on-tertiary-fixed": "#002114", "on-surface-variant": "#c9c4d8", "on-tertiary-container": "#acffd5", "surface-tint": "#c9beff", "inverse-on-surface": "#2d2f40", "tertiary-fixed-dim": "#45dfa4", "secondary": "#5de6ff", "on-secondary-fixed": "#001f25", "secondary-fixed": "#a2eeff", "background": "#101221", "on-tertiary-fixed-variant": "#005137", "surface-container-low": "#191a2a", "tertiary-fixed": "#68fcbf", "surface-container-high": "#272939", "inverse-primary": "#5f3ce4", "surface-container-lowest": "#0b0d1c", "on-secondary-fixed-variant": "#004e5a", "on-primary-fixed-variant": "#4616cc", "primary": "#c9beff", "surface-container-highest": "#323444", "on-error": "#690005", "secondary-fixed-dim": "#2fd9f4", "inverse-surface": "#e1e1f7", "surface-dim": "#101221", "primary-fixed": "#e6deff", "error": "#ffb4ab", "surface-container": "#1d1f2e", "on-secondary-container": "#00515d", "on-surface": "#e1e1f7", "on-background": "#e1e1f7", "on-error-container": "#ffdad6", "surface-bright": "#363849" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "gutter-desktop": "1.5rem", "space-md": "1rem", "space-xl": "2rem", "space-sm": "0.5rem", "margin": "1rem", "space-xs": "0.25rem", "gutter": "1rem", "margin-desktop": "2.5rem", "space-lg": "1.5rem" }, fontFamily: { "label-lg": ["Inter"], "display-lg-mobile": ["Space Grotesk"], "headline-lg-mobile": ["Space Grotesk"], "headline-lg": ["Space Grotesk"], "headline-md": ["Space Grotesk"], "body-md": ["Inter"], "label-md": ["Inter"], "body-sm": ["Inter"], "body-lg": ["Inter"], "display-lg": ["Space Grotesk"], "label-sm": ["Inter"] }, fontSize: { "label-lg": ["0.875rem", { lineHeight: "1.25rem", letterSpacing: "0.01em", fontWeight: "600" }], "display-lg-mobile": ["2.25rem", { lineHeight: "2.75rem", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-lg-mobile": ["1.5rem", { lineHeight: "2rem", letterSpacing: "-0.01em", fontWeight: "600" }], "headline-lg": ["2rem", { lineHeight: "2.5rem", letterSpacing: "-0.02em", fontWeight: "600" }], "headline-md": ["1.25rem", { lineHeight: "1.75rem", letterSpacing: "-0.01em", fontWeight: "600" }], "body-md": ["1rem", { lineHeight: "1.5rem", fontWeight: "400" }], "label-md": ["0.75rem", { lineHeight: "1rem", letterSpacing: "0.02em", fontWeight: "600" }], "body-sm": ["0.875rem", { lineHeight: "1.25rem", fontWeight: "400" }], "body-lg": ["1.125rem", { lineHeight: "1.75rem", fontWeight: "400" }], "display-lg": ["3rem", { lineHeight: "3.5rem", letterSpacing: "-0.03em", fontWeight: "700" }], "label-sm": ["0.6875rem", { lineHeight: "0.875rem", letterSpacing: "0.04em", fontWeight: "700" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>body { min-height: max(884px, 100dvh); }</style></head><body class="bg-surface text-on-surface font-body-md text-body-md min-h-screen flex flex-col antialiased selection:bg-primary/20"><div class="fixed top-0 w-full z-50 pt-safe px-margin flex justify-between items-center text-on-surface-variant font-label-sm text-label-sm select-none pointer-events-none"><span class="pt-space-xs">09:41</span><div class="flex items-center gap-space-xs pt-space-xs"><span class="material-symbols-outlined text-[15px]">signal_cellular_alt</span><span class="material-symbols-outlined text-[15px]">wifi</span><span class="material-symbols-outlined text-[16px]">battery_full</span></div></div><main class="flex-1 w-full bg-surface pt-safe pb-safe flex flex-col"><div class="flex flex-col w-full pb-32 overflow-hidden relative">
+<!-- Subtle Ambient Glow Orbs -->
+<div class="absolute -top-20 -left-20 w-72 h-72 bg-primary-container/20 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute top-80 -right-24 w-80 h-80 bg-secondary/15 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Header & Brand Hero -->
+<div class="px-margin pt-4 flex flex-col items-center text-center relative z-10">
+<!-- Live Pill Badge -->
+<div class="inline-flex items-center gap-space-xs bg-surface-container-high text-secondary px-3 py-1 rounded-full mb-space-md shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Édition 2025 • Nouvelle Version</span>
+</div>
+<!-- App Logo Icon -->
+<div class="relative w-20 h-20 mb-space-sm flex items-center justify-center">
+<div class="absolute inset-0 bg-gradient-to-tr from-primary-container to-secondary rounded-2xl blur-md opacity-40"></div>
+<div class="relative w-20 h-20 bg-surface-container rounded-2xl p-2.5 shadow-lg flex items-center justify-center">
+<img alt="FlashRevise Brand Icon" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Xkh24jdJKyoH-UdWRiEv4hkD-FzHhOHc0Dml1BYb7OeM6z2gvTgNaRSoiYN78QdYXmFcrWWxbLnQov5ptlgWmxIuy4E3pKWBJyJMPUZ3Msag9f7fAYTBUXEfQM3WeKOoWhbJS6NJAL2sxQEXUvaZa6n0nN-yWGkTplLHruI86JkVpWPftd71H1L0EyInkc9-JUvUytZEFCWbk_XHS7J3RB-n3_xhZya-uLx5UymfRGjOJyoMSnjtJHJA"/>
+</div>
+</div>
+<!-- Stylized Brand Title -->
+<h1 class="font-display-lg-mobile text-display-lg-mobile bg-gradient-to-r from-primary via-primary-fixed-dim to-secondary bg-clip-text text-transparent tracking-tight">
+      FlashRevise
+    </h1>
+<!-- Punchy Slogan -->
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mt-space-xs mb-space-sm font-semibold max-w-xs">
+      Réviser plus vite.<br/>Retenir pour de bon.
+    </h2>
+<!-- Comprehensive Subtitle -->
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm leading-relaxed px-1">
+      L'application de flashcards intelligente conçue pour les étudiants. Créez des matières illimitées, ajoutez vos questions/réponses en 1 clic et révisez partout, même sans connexion internet.
+    </p>
+<!-- Social Proof Badge Counter -->
+<div class="mt-space-md flex items-center gap-space-sm bg-surface-container-low px-4 py-2 rounded-full shadow-sm">
+<div class="flex items-center text-[#FBBF24]">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-semibold">4.9/5</span>
+<span class="text-outline-variant font-label-md text-label-md">•</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">+25 000 étudiants</span>
+</div>
+</div>
+<!-- Interactive Floating Mockup Stage -->
+<div class="mt-space-lg px-margin relative z-10" id="cardShowcaseStage">
+<!-- Active Main Floating Card (Pythagore Interactive Demo) -->
+<div class="w-full bg-surface-container-high rounded-2xl p-space-lg shadow-xl cursor-pointer relative overflow-hidden transition-all duration-300 transform active:scale-[0.99]" id="interactiveCard">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-xs bg-primary-container/20 text-primary-fixed-dim px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-sm">school</span>
+<span class="font-label-sm text-label-sm">Mathématiques • Terminale</span>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-container px-2 py-0.5 rounded-full text-secondary">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">wifi_off</span>
+<span class="font-label-sm text-label-sm">Hors-ligne</span>
+</div>
+</div>
+<!-- Card Question Content -->
+<div class="mb-space-md">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider block mb-1">Question</span>
+<p class="font-headline-md text-headline-md text-on-surface font-semibold">
+          Quel est l'énoncé formel du Théorème de Pythagore ?
+        </p>
+</div>
+<!-- Card Answer Flip Area -->
+<div class="bg-surface-container rounded-xl p-space-md transition-all duration-300 relative" id="cardAnswerBox">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm text-tertiary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">check_circle</span> Réponse validée
+          </span>
+<span class="font-label-sm text-label-sm text-outline-variant">Toucher pour révéler</span>
+</div>
+<p class="font-headline-md text-headline-md text-secondary font-mono tracking-wide mt-1">
+          a² + b² = c²
+        </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1.5">
+          Dans un triangle rectangle, le carré de l'hypoténuse est égal à la somme des carrés des deux autres côtés.
+        </p>
+</div>
+<!-- Micro Review Pills Demo -->
+<div class="mt-space-md pt-space-xs grid grid-cols-4 gap-2">
+<div class="flex flex-col items-center py-1.5 rounded-lg bg-error-container/20 text-error text-center">
+<span class="font-label-sm text-label-sm font-bold">À revoir</span>
+<span class="text-[10px] text-error/80">1m</span>
+</div>
+<div class="flex flex-col items-center py-1.5 rounded-lg bg-surface-container text-on-surface-variant text-center">
+<span class="font-label-sm text-label-sm font-bold">Difficile</span>
+<span class="text-[10px] text-outline">10m</span>
+</div>
+<div class="flex flex-col items-center py-1.5 rounded-lg bg-surface-container text-secondary text-center">
+<span class="font-label-sm text-label-sm font-bold">Bien</span>
+<span class="text-[10px] text-secondary/80">1j</span>
+</div>
+<div class="flex flex-col items-center py-1.5 rounded-lg bg-tertiary-container/30 text-tertiary text-center">
+<span class="font-label-sm text-label-sm font-bold">Facile</span>
+<span class="text-[10px] text-tertiary/80">4j</span>
+</div>
+</div>
+</div>
+<!-- Auxiliary Peek Cards in Stack -->
+<div class="grid grid-cols-2 gap-space-sm mt-space-sm">
+<!-- Peek Card 1: Bio -->
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-md flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-1 text-tertiary mb-1">
+<span class="material-symbols-outlined text-xs">bolt</span>
+<span class="font-label-sm text-label-sm">Biologie</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface font-semibold line-clamp-2">
+            Cycle de Krebs : Où a-t-il lieu ?
+          </p>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2 pt-2 border-t-0 flex items-center justify-between">
+<span class="text-tertiary font-label-sm text-label-sm font-semibold">Matrice mitochondriale</span>
+<span class="material-symbols-outlined text-xs text-tertiary">check</span>
+</p>
+</div>
+<!-- Peek Card 2: AI Deck -->
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-md flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-1 text-secondary mb-1">
+<span class="material-symbols-outlined text-xs">auto_awesome</span>
+<span class="font-label-sm text-label-sm">IA Groq</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface font-semibold line-clamp-2">
+            Généré depuis "Cours_Droit.pdf"
+          </p>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2 flex items-center gap-1 text-secondary">
+<span class="font-label-sm text-label-sm font-semibold">48 cartes prêtes</span>
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Impact Stats Banner -->
+<div class="px-margin mt-space-xl">
+<div class="bg-surface-container-low rounded-2xl p-space-md flex items-center justify-around text-center shadow-md">
+<div class="flex flex-col items-center">
+<span class="font-display-lg-mobile text-display-lg-mobile text-secondary font-bold leading-none">+42%</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">Rétention examens</span>
+</div>
+<div class="w-px h-10 bg-outline-variant/40"></div>
+<div class="flex flex-col items-center">
+<span class="font-display-lg-mobile text-display-lg-mobile text-tertiary font-bold leading-none">0 sec</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">Temps de lag offline</span>
+</div>
+<div class="w-px h-10 bg-outline-variant/40"></div>
+<div class="flex flex-col items-center">
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary font-bold leading-none">∞</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">Decks &amp; Cartes</span>
+</div>
+</div>
+</div>
+<!-- Feature Value Props: "Pourquoi FlashRevise ?" -->
+<div class="px-margin mt-space-xl">
+<div class="flex items-center gap-space-xs mb-space-xs">
+<span class="material-symbols-outlined text-secondary text-base">psychology</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Conçu pour l'excellence</span>
+</div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-semibold mb-space-md">
+      Pourquoi FlashRevise ?
+    </h3>
+<div class="flex flex-col gap-space-sm">
+<!-- Feature 1: Unlimited Decks -->
+<div class="bg-surface-container rounded-2xl p-space-md flex gap-space-md items-start shadow-sm">
+<div class="w-12 h-12 rounded-xl bg-primary-container/20 text-primary-fixed-dim flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-2xl">style</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-headline-md text-headline-md text-on-surface font-semibold">
+            Matières &amp; Cartes Illimitées
+          </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">
+            Créez une matière et ajoutez autant de questions/réponses que vous souhaitez sans aucune limite ni abonnement bloquant.
+          </p>
+</div>
+</div>
+<!-- Feature 2: 100% Offline -->
+<div class="bg-surface-container rounded-2xl p-space-md flex gap-space-md items-start shadow-sm">
+<div class="w-12 h-12 rounded-xl bg-secondary-container/20 text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-2xl">offline_bolt</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-headline-md text-headline-md text-on-surface font-semibold">
+            100% Fonctionnel Hors-Ligne
+          </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">
+            Révisez dans le train, le métro ou sans wifi en mode Question / Réponse / Skip instantané avec synchronisation locale fluide.
+          </p>
+</div>
+</div>
+<!-- Feature 3: Groq AI -->
+<div class="bg-surface-container rounded-2xl p-space-md flex gap-space-md items-start shadow-sm">
+<div class="w-12 h-12 rounded-xl bg-tertiary-container/30 text-tertiary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-2xl">neurology</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-space-xs">
+<h4 class="font-headline-md text-headline-md text-on-surface font-semibold">
+              Génération IA Groq
+            </h4>
+<span class="bg-tertiary/20 text-tertiary px-1.5 py-0.5 rounded text-[10px] font-bold">Ultra-Rapide</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">
+            Transformez vos cours magistraux, PDF ou notes brutes en paquets de révision optimisés en quelques secondes chrono.
+          </p>
+</div>
+</div>
+<!-- Feature 4: Spaced Repetition -->
+<div class="bg-surface-container rounded-2xl p-space-md flex gap-space-md items-start shadow-sm">
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-2xl">local_fire_department</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-headline-md text-headline-md text-on-surface font-semibold">
+            Répétition Espacée &amp; Streak
+          </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">
+            Mémorisez durablement sans saturer grâce au rappel calibré selon l'algorithme SM-2 optimisé et maintenez votre série quotidienne.
+          </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Student Reviews Mini Showcase -->
+<div class="px-margin mt-space-xl">
+<div class="bg-surface-container-low rounded-2xl p-space-lg shadow-md">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-space-xs text-[#FBBF24]">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary font-semibold">Étudiant PASS Médecine</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface italic leading-relaxed">
+        “La rapidité du mode hors-ligne dans le RER et l'import automatique des cours m'ont fait gagner au moins 5 heures de fiches par semaine. Indispensable pour réussir le concours.”
+      </p>
+<div class="mt-space-md flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container font-bold flex items-center justify-center text-xs">
+            AL
+          </div>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-semibold">Alexandre L.</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Sorbonne Université</p>
+</div>
+</div>
+<div class="flex items-center gap-1 text-tertiary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs">verified</span>
+<span>Vérifié</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Reassurance Micro-banner -->
+<div class="px-margin mt-space-lg flex items-center justify-center gap-space-md text-on-surface-variant font-label-sm text-label-sm text-center">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-tertiary">check</span> Gratuit à vie
+    </span>
+<span>•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-tertiary">lock</span> Données privées
+    </span>
+<span>•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-tertiary">bolt</span> Sans carte bancaire
+    </span>
+</div>
+<!-- Sticky Bottom Actions Container -->
+<div class="fixed bottom-0 left-0 right-0 p-margin bg-surface-container-lowest/90 backdrop-blur-xl border-t-0 z-40 flex flex-col gap-space-xs pb-safe">
+<!-- Primary CTA: Commencer Gratuitement -->
+<button class="w-full h-14 rounded-2xl bg-gradient-to-r from-primary-container via-primary-container to-secondary text-white font-label-lg text-label-lg font-bold flex items-center justify-center gap-space-sm shadow-xl hover:opacity-95 active:scale-[0.98] transition-all" id="ctaStartBtn">
+<span>Commencer gratuitement</span>
+<span class="material-symbols-outlined text-xl">arrow_forward</span>
+</button>
+<!-- Secondary CTA: J'ai déjà un compte • Se connecter -->
+<button class="w-full py-2.5 text-center text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors active:opacity-75" id="ctaLoginBtn">
+      J'ai déjà un compte • <span class="text-primary font-semibold underline underline-offset-4 decoration-primary/40">Se connecter</span>
+</button>
+</div>
+</div>
+<script>
+  // Simple micro-interaction for flipping/expanding answer card
+  (function() {
+    const card = document.getElementById('interactiveCard');
+    const answerBox = document.getElementById('cardAnswerBox');
+    if (card && answerBox) {
+      card.addEventListener('click', function() {
+        answerBox.classList.toggle('ring-2');
+        answerBox.classList.toggle('ring-secondary/50');
+        answerBox.classList.toggle('bg-surface-container-highest');
+      });
+    }
+
+    const startBtn = document.getElementById('ctaStartBtn');
+    if (startBtn) {
+      startBtn.addEventListener('click', function() {
+        startBtn.innerHTML = `
+          <span class="material-symbols-outlined text-xl animate-spin">progress_activity</span>
+          <span>Préparation de votre session...</span>
+        `;
+        setTimeout(function() {
+          startBtn.innerHTML = `
+            <span class="material-symbols-outlined text-xl">check</span>
+            <span>C'est parti !</span>
+          `;
+        }, 800);
+      });
+    }
+  })();
+</script></main></body></html>
