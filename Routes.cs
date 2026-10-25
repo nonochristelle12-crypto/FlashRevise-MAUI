@@ -21,6 +21,9 @@ public static class Routes
     public const string GoalsBooks = "goals";
     public const string Achievements = "achievements";
     public const string OfflineState = "offline";
+    public const string Login = "login";
+    public const string Register = "register";
+    public const string ForgotPassword = "forgot-password";
 
     public static string WithId(string route, int id) => $"{route}?id={id}";
 }

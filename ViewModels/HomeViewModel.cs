@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FlashRevise.Models;
 using FlashRevise.Services;
+using FlashRevise.Services.Auth;
 
 namespace FlashRevise.ViewModels;
 
@@ -11,6 +12,10 @@ public partial class HomeViewModel : BaseViewModel
 {
     private readonly IStatsService _stats;
     private readonly IOfflineService _offline;
+    private readonly IAuthService _auth;
+
+    [ObservableProperty]
+    public partial bool IsSignedOut { get; set; } = true;
 
     [ObservableProperty]
     public partial DashboardSnapshot Dashboard { get; set; } = new();
@@ -27,10 +32,11 @@ public partial class HomeViewModel : BaseViewModel
     [ObservableProperty]
     public partial bool HasSubjects { get; set; }
 
-    public HomeViewModel(IStatsService stats, IOfflineService offline)
+    public HomeViewModel(IStatsService stats, IOfflineService offline, IAuthService auth)
     {
         _stats = stats;
         _offline = offline;
+        _auth = auth;
         Title = "Accueil";
         _offline.OnlineChanged += (_, online) => IsOffline = !online;
         IsOffline = !_offline.IsOnline;
@@ -73,6 +79,7 @@ public partial class HomeViewModel : BaseViewModel
         try
         {
             Dashboard = await _stats.GetDashboardAsync();
+            IsSignedOut = !await _auth.HasSessionAsync();
             Greeting = Dashboard.IsGuest ? "Bonjour 👋" : $"Bonjour, {Dashboard.FirstName} 👋";
             GoalSummary = Dashboard.RemainingForGoal == 0
                 ? "Objectif du jour atteint, bravo !"
@@ -114,11 +121,17 @@ public partial class HomeViewModel : BaseViewModel
         Shell.Current.GoToAsync($"{Routes.RevisionConfig}?subjectId=0");
 
     [RelayCommand]
+    private static Task OpenLoginAsync() => Shell.Current.GoToAsync(Routes.Login);
+
+    [RelayCommand]
     private static Task AddSubjectAsync() =>
         Shell.Current.GoToAsync($"{Routes.SubjectDetail}?id=0");
 
     [RelayCommand]
     private static Task OpenAiAsync() => Shell.Current.GoToAsync(Routes.AiUpload);
+
+    [RelayCommand]
+    private static Task OpenScanAsync() => Shell.Current.GoToAsync($"{Routes.AiUpload}?scan=1");
 
     [RelayCommand]
     private static Task OpenChatAsync() => Shell.Current.GoToAsync(Routes.AiChat);

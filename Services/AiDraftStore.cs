@@ -10,6 +10,7 @@ public sealed class AiDraftStore
     public string SubjectName { get; set; } = string.Empty;
     public string SourceName { get; set; } = string.Empty;
     public string SourceText { get; set; } = string.Empty;
+    public string SourceImagePath { get; set; } = string.Empty;
     public int RequestedCount { get; set; } = 10;
     public AiSourceType SourceType { get; set; } = AiSourceType.Text;
     public bool IsReady { get; set; }
@@ -23,6 +24,7 @@ public sealed class AiDraftStore
         SubjectName = string.Empty;
         SourceName = string.Empty;
         SourceText = string.Empty;
+        SourceImagePath = string.Empty;
         RequestedCount = 10;
         SourceType = AiSourceType.Text;
         IsReady = false;

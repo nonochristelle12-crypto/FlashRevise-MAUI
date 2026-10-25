@@ -3,6 +3,7 @@ using FlashRevise.Data;
 using FlashRevise.Data.Repositories;
 using FlashRevise.Services;
 using FlashRevise.Services.Ai;
+using FlashRevise.Services.Auth;
 using FlashRevise.ViewModels;
 using FlashRevise.Views;
 using LiveChartsCore.SkiaSharpView.Maui;
@@ -96,6 +97,7 @@ public static class MauiProgram
         services.AddSingleton<IBookService, BookService>();
         services.AddSingleton<DataSeeder>();
         services.AddSingleton<AppBootstrapper>();
+        services.AddSingleton<IAuthService, AuthService>();
 
         services.AddHttpClient<IAiService, GroqAiService>(client =>
         {
@@ -132,6 +134,9 @@ public static class MauiProgram
         services.AddTransient<GoalsBooksViewModel>();
         services.AddTransient<AchievementsViewModel>();
         services.AddTransient<OfflineStateViewModel>();
+        services.AddTransient<LoginViewModel>();
+        services.AddTransient<RegisterViewModel>();
+        services.AddTransient<ForgotPasswordViewModel>();
     }
 
     private static void AddPages(IServiceCollection services)
@@ -154,5 +159,8 @@ public static class MauiProgram
         services.AddTransient<Views.Settings.GoalsBooksPage>();
         services.AddTransient<Views.Settings.AchievementsPage>();
         services.AddTransient<Views.Settings.OfflineStatePage>();
+        services.AddTransient<Views.Auth.LoginPage>();
+        services.AddTransient<Views.Auth.RegisterPage>();
+        services.AddTransient<Views.Auth.ForgotPasswordPage>();
     }
 }

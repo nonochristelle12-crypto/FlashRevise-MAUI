@@ -10,6 +10,12 @@ public sealed class GroqOptions
     /// <summary>Modèle de chat utilisé pour la génération, les explications et l'assistant.</summary>
     public string Model { get; set; } = "openai/gpt-oss-120b";
 
+    /// <summary>Modèle multimodal utilisé pour lire le texte d'une photo ou d'un scan.</summary>
+    public string VisionModel { get; set; } = "meta-llama/llama-4-scout-17b-16e-instruct";
+
+    /// <summary>Modèles vision essayés si le premier n'est plus disponible sur la clé.</summary>
+    public string[] VisionFallbackModels { get; set; } = ["meta-llama/llama-4-maverick-17b-128e-instruct"];
+
     public int TimeoutSeconds { get; set; } = 90;
 
     public int MaxRetries { get; set; } = 3;

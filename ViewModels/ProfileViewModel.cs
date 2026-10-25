@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FlashRevise.Services;
 using FlashRevise.Services.Ai;
+using FlashRevise.Services.Auth;
 using Microsoft.Maui.Media;
 
 namespace FlashRevise.ViewModels;
@@ -12,6 +13,7 @@ public partial class ProfileViewModel : BaseViewModel
     private readonly IStatsService _stats;
     private readonly IApiKeyStore _apiKeys;
     private readonly IAiService _ai;
+    private readonly IAuthService _auth;
 
     [ObservableProperty]
     public partial string Name { get; set; } = string.Empty;
@@ -52,6 +54,34 @@ public partial class ProfileViewModel : BaseViewModel
     [ObservableProperty]
     public partial bool IsDarkTheme { get; set; }
 
+    [ObservableProperty]
+    public partial bool IsSignedIn { get; set; }
+
+    [ObservableProperty]
+    public partial string AccountEmail { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string AuthBaseUrlInput { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string? AuthStatusMessage { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsAuthBusy { get; set; }
+
+    public bool IsSignedOut => !IsSignedIn;
+
+    public bool IsNotAuthBusy => !IsAuthBusy;
+
+    public bool HasAuthStatusMessage => !string.IsNullOrWhiteSpace(AuthStatusMessage);
+
+    public string AccountSubtitle => IsSignedIn
+        ? $"Connecté · {AccountEmail}"
+        : "Mode invité — tes révisions restent sur l'appareil";
+
+    public string ServerHint =>
+        "Sur téléphone, saisis l'adresse IP du PC sur le même Wi-Fi (ex. http://192.168.1.10:5047/).";
+
     public bool HasStatusMessage => !string.IsNullOrWhiteSpace(StatusMessage);
 
     public string ApiKeyHint => HasApiKey
@@ -70,6 +100,19 @@ public partial class ProfileViewModel : BaseViewModel
 
     partial void OnHasApiKeyChanged(bool value) => OnPropertyChanged(nameof(ApiKeyHint));
 
+    partial void OnIsSignedInChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsSignedOut));
+        OnPropertyChanged(nameof(AccountSubtitle));
+    }
+
+    partial void OnAccountEmailChanged(string value) => OnPropertyChanged(nameof(AccountSubtitle));
+
+    partial void OnAuthStatusMessageChanged(string? value) =>
+        OnPropertyChanged(nameof(HasAuthStatusMessage));
+
+    partial void OnIsAuthBusyChanged(bool value) => OnPropertyChanged(nameof(IsNotAuthBusy));
+
     partial void OnIsDarkThemeChanged(bool value)
     {
         var target = value ? AppTheme.Dark : AppTheme.Light;
@@ -79,11 +122,12 @@ public partial class ProfileViewModel : BaseViewModel
         }
     }
 
-    public ProfileViewModel(IStatsService stats, IApiKeyStore apiKeys, IAiService ai)
+    public ProfileViewModel(IStatsService stats, IApiKeyStore apiKeys, IAiService ai, IAuthService auth)
     {
         _stats = stats;
         _apiKeys = apiKeys;
         _ai = ai;
+        _auth = auth;
         Title = "Profil";
     }
 
@@ -112,6 +156,11 @@ public partial class ProfileViewModel : BaseViewModel
                 ? "Clé enregistrée dans le stockage sécurisé"
                 : "Aucune clé configurée";
             IsDarkTheme = Application.Current?.UserAppTheme == AppTheme.Dark;
+
+            IsSignedIn = await _auth.HasSessionAsync();
+            var account = await _auth.GetCurrentUserAsync();
+            AccountEmail = account?.Email ?? string.Empty;
+            AuthBaseUrlInput = _auth.BaseUrl;
         }
         catch (Exception ex)
         {
@@ -266,4 +315,136 @@ public partial class ProfileViewModel : BaseViewModel
 
     [RelayCommand]
     private static Task OpenOfflineAsync() => Shell.Current.GoToAsync(Routes.OfflineState);
+
+    [RelayCommand]
+    private static Task OpenLoginAsync() => Shell.Current.GoToAsync(Routes.Login);
+
+    [RelayCommand]
+    private static Task OpenRegisterAsync() => Shell.Current.GoToAsync(Routes.Register);
+
+    [RelayCommand]
+    private async Task LogoutAsync()
+    {
+        var confirmed = await Shell.Current.DisplayAlertAsync(
+            "Se déconnecter",
+            "Tes cartes et tes révisions restent sur l'appareil. Tu repasses en mode invité.",
+            "Se déconnecter",
+            "Annuler");
+        if (!confirmed)
+        {
+            return;
+        }
+
+        IsAuthBusy = true;
+        AuthStatusMessage = null;
+        try
+        {
+            await _auth.LogoutAsync();
+            await ClearAccountStateAsync();
+            AuthStatusMessage = "Déconnecté. Mode invité activé.";
+        }
+        catch (Exception ex)
+        {
+            AuthStatusMessage = ex.Message;
+        }
+        finally
+        {
+            IsAuthBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteAccountAsync()
+    {
+        var confirmed = await Shell.Current.DisplayAlertAsync(
+            "Supprimer mon compte",
+            "Le compte sera supprimé définitivement sur le serveur. Tes cartes locales restent sur l'appareil.",
+            "Continuer",
+            "Annuler");
+        if (!confirmed)
+        {
+            return;
+        }
+
+        var doubleCheck = await Shell.Current.DisplayAlertAsync(
+            "Confirmer la suppression",
+            "Cette action est irréversible.",
+            "Supprimer définitivement",
+            "Annuler");
+        if (!doubleCheck)
+        {
+            return;
+        }
+
+        IsAuthBusy = true;
+        AuthStatusMessage = null;
+        try
+        {
+            await _auth.DeleteAccountAsync();
+            await ClearAccountStateAsync();
+            AuthStatusMessage = "Compte supprimé. Mode invité activé.";
+        }
+        catch (Exception ex)
+        {
+            AuthStatusMessage = ex.Message;
+        }
+        finally
+        {
+            IsAuthBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private void SaveServerUrl()
+    {
+        try
+        {
+            _auth.SetBaseUrl(AuthBaseUrlInput);
+            AuthBaseUrlInput = _auth.BaseUrl;
+            AuthStatusMessage = "Adresse du serveur enregistrée.";
+        }
+        catch (Exception ex)
+        {
+            AuthStatusMessage = ex.Message;
+        }
+    }
+
+    [RelayCommand]
+    private async Task TestServerAsync()
+    {
+        IsAuthBusy = true;
+        AuthStatusMessage = "Test de connexion en cours…";
+        try
+        {
+            _auth.SetBaseUrl(AuthBaseUrlInput);
+            AuthBaseUrlInput = _auth.BaseUrl;
+            var reachable = await _auth.CheckServerAsync();
+            AuthStatusMessage = reachable
+                ? $"Serveur joignable ({_auth.BaseUrl})."
+                : $"Serveur injoignable ({_auth.BaseUrl}). Vérifie que l'API tourne et que le téléphone est sur le même Wi-Fi.";
+        }
+        catch (Exception ex)
+        {
+            AuthStatusMessage = ex.Message;
+        }
+        finally
+        {
+            IsAuthBusy = false;
+        }
+    }
+
+    private async Task ClearAccountStateAsync()
+    {
+        IsSignedIn = false;
+        AccountEmail = string.Empty;
+
+        var profile = await _stats.GetProfileAsync();
+        if (!string.IsNullOrWhiteSpace(profile.Name))
+        {
+            profile.Name = string.Empty;
+            await _stats.SaveProfileAsync(profile);
+        }
+
+        Name = string.Empty;
+    }
 }

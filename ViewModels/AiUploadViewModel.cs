@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using FlashRevise.Models;
 using FlashRevise.Services;
 using FlashRevise.Services.Ai;
+using Microsoft.Maui.Media;
 
 namespace FlashRevise.ViewModels;
 
@@ -24,6 +25,9 @@ public partial class AiUploadViewModel : BaseViewModel
     public partial int SelectedSubjectIndex { get; set; }
 
     [ObservableProperty]
+    public partial string SubjectNameInput { get; set; } = string.Empty;
+
+    [ObservableProperty]
     public partial int SelectedCountIndex { get; set; } = 1;
 
     [ObservableProperty]
@@ -40,6 +44,15 @@ public partial class AiUploadViewModel : BaseViewModel
 
     [ObservableProperty]
     public partial bool HasFile { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsImageSource { get; set; }
+
+    [ObservableProperty]
+    public partial bool CanScan { get; set; }
+
+    [ObservableProperty]
+    public partial string FilePreviewPath { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial bool IsExtracting { get; set; }
@@ -105,6 +118,14 @@ public partial class AiUploadViewModel : BaseViewModel
 
     partial void OnHasFileChanged(bool value) => OnPropertyChanged(nameof(FileBadge));
 
+    partial void OnSelectedSubjectIndexChanged(int value)
+    {
+        if (value >= 0 && value < Subjects.Count)
+        {
+            SubjectNameInput = Subjects[value].Name;
+        }
+    }
+
     partial void OnHasApiKeyChanged(bool value) => OnPropertyChanged(nameof(HasNoApiKey));
 
     partial void OnApiKeyMessageChanged(string value) => OnPropertyChanged(nameof(HasApiKeyMessage));
@@ -167,6 +188,13 @@ public partial class AiUploadViewModel : BaseViewModel
                 SubjectNames.Add(subject.Name);
             }
 
+            if (string.IsNullOrWhiteSpace(SubjectNameInput) && Subjects.Count > 0)
+            {
+                SelectedSubjectIndex = 0;
+                SubjectNameInput = Subjects[0].Name;
+            }
+
+            CanScan = MediaPicker.Default.IsCaptureSupported;
             OnPropertyChanged(nameof(HasSubjects));
             HasApiKey = await _apiKeys.HasKeyAsync();
         }
@@ -198,8 +226,11 @@ public partial class AiUploadViewModel : BaseViewModel
             }
 
             _importedFile = file;
+            IsFileMode = true;
             FileName = file.FileName;
             FileMeta = $"{FormatSize(file.SizeBytes)} · {file.Extension.TrimStart('.').ToUpperInvariant()}";
+            IsImageSource = file.SourceType == AiSourceType.Image;
+            FilePreviewPath = IsImageSource ? file.Path : string.Empty;
             HasFile = true;
         }
         catch (Exception ex)
@@ -209,11 +240,92 @@ public partial class AiUploadViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    private async Task ScanPhotoAsync()
+    {
+        if (!MediaPicker.Default.IsCaptureSupported)
+        {
+            ErrorMessage = "La caméra n'est pas disponible sur cet appareil. Utilise « Galerie ».";
+            return;
+        }
+
+        ClearError();
+        try
+        {
+            var photo = await MediaPicker.Default.CapturePhotoAsync(new MediaPickerOptions
+            {
+                Title = "Scanner un document"
+            });
+
+            if (photo is not null)
+            {
+                await AttachPhotoAsync(photo, "Document scanné");
+            }
+        }
+        catch (PermissionException)
+        {
+            ErrorMessage = "Autorise l'accès à l'appareil photo dans les réglages Android.";
+        }
+        catch (FeatureNotSupportedException)
+        {
+            ErrorMessage = "La caméra n'est pas disponible ici. Choisis une photo dans la galerie.";
+        }
+        catch (Exception ex)
+        {
+            ReportError(ex);
+        }
+    }
+
+    [RelayCommand]
+    private async Task PickPhotoAsync()
+    {
+        ClearError();
+        try
+        {
+            var photos = await MediaPicker.Default.PickPhotosAsync(new MediaPickerOptions
+            {
+                Title = "Choisir une photo de cours"
+            });
+
+            var photo = photos?.FirstOrDefault();
+            if (photo is not null)
+            {
+                await AttachPhotoAsync(photo, "Photo de cours");
+            }
+        }
+        catch (Exception ex)
+        {
+            ReportError(ex);
+        }
+    }
+
+    private async Task AttachPhotoAsync(FileResult photo, string displayName)
+    {
+        var extension = Path.GetExtension(photo.FileName);
+        if (string.IsNullOrWhiteSpace(extension))
+        {
+            extension = ".jpg";
+        }
+
+        await using var stream = await photo.OpenReadAsync();
+        var path = await _storage.SaveImageAsync(stream, $"scan_{DateTime.UtcNow:yyyyMMddHHmmss}{extension}");
+
+        _importedFile = new ImportedFile(path, displayName, extension, new FileInfo(path).Length, AiSourceType.Image);
+        IsFileMode = true;
+        IsImageSource = true;
+        FileName = displayName;
+        FileMeta = "Photo · lecture IA du texte et du code";
+        FilePreviewPath = path;
+        HasFile = true;
+    }
+
+    [RelayCommand]
     private void ClearFile()
     {
         _importedFile = null;
         FileName = string.Empty;
         FileMeta = string.Empty;
+        IsImageSource = false;
+        FilePreviewPath = string.Empty;
         HasFile = false;
     }
 
@@ -227,15 +339,16 @@ public partial class AiUploadViewModel : BaseViewModel
 
         ClearError();
 
-        if (Subjects.Count == 0)
+        var subjectName = SubjectNameInput.Trim();
+        if (subjectName.Length < 2)
         {
-            ErrorMessage = "Crée d'abord une matière pour y ranger les cartes générées.";
+            ErrorMessage = "Indique le nom de la matière ou du paquet de cartes à créer.";
             return;
         }
 
         if (IsFileMode && _importedFile is null)
         {
-            ErrorMessage = "Importe un document ou repasse en mode texte libre.";
+            ErrorMessage = "Importe un document, scanne une photo ou repasse en mode texte libre.";
             return;
         }
 
@@ -257,28 +370,43 @@ public partial class AiUploadViewModel : BaseViewModel
             var text = SourceText.Trim();
             var sourceType = AiSourceType.Text;
             var sourceName = "Texte saisi";
+            var imagePath = string.Empty;
 
             if (IsFileMode && _importedFile is not null)
             {
-                IsExtracting = true;
-                text = (await _storage.ExtractTextAsync(_importedFile)).Trim();
                 sourceType = _importedFile.SourceType;
                 sourceName = _importedFile.FileName;
+
+                if (sourceType == AiSourceType.Image)
+                {
+                    imagePath = _importedFile.Path;
+                    if (!File.Exists(imagePath))
+                    {
+                        ErrorMessage = "La photo importée est introuvable. Scanne à nouveau le document.";
+                        return;
+                    }
+                }
+                else
+                {
+                    IsExtracting = true;
+                    text = (await _storage.ExtractTextAsync(_importedFile)).Trim();
+                }
             }
 
-            if (text.Length < MinimumTextLength)
+            if (sourceType != AiSourceType.Image && text.Length < MinimumTextLength)
             {
                 ErrorMessage = "Le document ne contient pas assez de texte exploitable. Essaie un autre fichier.";
                 return;
             }
 
-            var subject = Subjects[Math.Clamp(SelectedSubjectIndex, 0, Subjects.Count - 1)];
+            var subject = await ResolveSubjectAsync(subjectName);
 
             _draft.Reset();
             _draft.SubjectId = subject.Id;
             _draft.SubjectName = subject.Name;
             _draft.SourceName = sourceName;
             _draft.SourceText = text;
+            _draft.SourceImagePath = imagePath;
             _draft.RequestedCount = CountOptions[Math.Clamp(SelectedCountIndex, 0, CountOptions.Count - 1)].Value;
             _draft.SourceType = sourceType;
 
@@ -293,6 +421,39 @@ public partial class AiUploadViewModel : BaseViewModel
             IsExtracting = false;
             IsBusy = false;
         }
+    }
+
+    /// <summary>Réutilise la matière portant ce nom, ou la crée à la volée.</summary>
+    private async Task<Subject> ResolveSubjectAsync(string name)
+    {
+        var subject = Subjects.FirstOrDefault(s =>
+            string.Equals(s.Name.Trim(), name, StringComparison.OrdinalIgnoreCase));
+
+        if (subject is null)
+        {
+            var all = await _subjects.GetSubjectsAsync();
+            subject = all.FirstOrDefault(s =>
+                string.Equals(s.Name.Trim(), name, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (subject is not null)
+        {
+            return subject;
+        }
+
+        subject = new Subject
+        {
+            Name = name,
+            Color = "#6C4CF1",
+            Icon = "auto_awesome",
+            Description = "Matière créée depuis la génération IA"
+        };
+
+        subject.Id = await _subjects.SaveAsync(subject);
+        Subjects.Add(subject);
+        SubjectNames.Add(subject.Name);
+        OnPropertyChanged(nameof(HasSubjects));
+        return subject;
     }
 
     [RelayCommand]

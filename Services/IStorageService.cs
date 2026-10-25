@@ -17,5 +17,8 @@ public interface IStorageService
     /// <summary>Copie une pièce jointe dans le dossier privé de l'application.</summary>
     Task<string> SaveImageAsync(string sourcePath, string suggestedName);
 
+    /// <summary>Copie un flux photo (caméra, galerie) dans le dossier privé de l'application.</summary>
+    Task<string> SaveImageAsync(Stream source, string suggestedName);
+
     string ImportsDirectory { get; }
 }

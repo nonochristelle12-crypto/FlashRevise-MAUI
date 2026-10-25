@@ -7,6 +7,8 @@ using System.Text.Json.Serialization;
 using FlashRevise.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Graphics.Platform;
 
 namespace FlashRevise.Services.Ai;
 
@@ -22,6 +24,12 @@ public sealed class GroqAiService : IAiService
         "Tu es l'assistant de révision de FlashRevise. Tu réponds en français, de façon concise et structurée. " +
         "Tu peux expliquer une notion, proposer une méthode de mémorisation ou créer un mini-quiz. " +
         "Si l'étudiant te donne du contexte de cours, appuie-toi dessus plutôt que sur tes connaissances générales.";
+
+    private const string OcrPrompt =
+        "Tu transcris fidèlement le contenu pédagogique visible sur cette photo (page de cours, tableau, notes manuscrites ou code). " +
+        "Restitue tout le texte lisible : titres, paragraphes, listes, tableaux, formules et code source en conservant l'indentation et le langage. " +
+        "N'ajoute aucun commentaire, aucune introduction et aucune conclusion. " +
+        "Si l'image est totalement illisible, réponds uniquement : [ILLISIBLE].";
 
     private readonly HttpClient _httpClient;
     private readonly IApiKeyStore _apiKeys;
@@ -75,6 +83,56 @@ public sealed class GroqAiService : IAiService
         }
 
         return cards.Take(count).ToList();
+    }
+
+    public async Task<string> ExtractImageTextAsync(string imagePath, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(imagePath) || !File.Exists(imagePath))
+        {
+            throw new AiServiceException("La photo est introuvable. Reprends le scan ou choisis une autre image.");
+        }
+
+        var (dataUrl, mimeType) = await BuildImageDataUrlAsync(imagePath, cancellationToken).ConfigureAwait(false);
+        var models = GetVisionModels();
+        AiApiException? lastError = null;
+
+        try
+        {
+            foreach (var model in models)
+            {
+                try
+                {
+                    var content = await CompleteVisionAsync(model, dataUrl, mimeType, cancellationToken).ConfigureAwait(false);
+                    if (content.Contains("[ILLISIBLE]", StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new AiServiceException(
+                            "La photo est trop floue ou illisible. Reprends-la bien à plat, avec plus de lumière.");
+                    }
+
+                    if (content.Length < 10)
+                    {
+                        throw new AiServiceException(
+                            "Aucun texte exploitable n'a été détecté sur la photo. Cadre mieux le document et réessaie.");
+                    }
+
+                    return content;
+                }
+                catch (AiApiException ex) when (IsModelUnavailable(ex))
+                {
+                    _logger.LogWarning(ex, "Modèle vision {Model} indisponible, essai du suivant", model);
+                    lastError = ex;
+                }
+            }
+        }
+        catch (OperationCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            throw new AiServiceException(
+                "La lecture de la photo a dépassé le délai imparti. Vérifie ta connexion puis réessaie.", ex);
+        }
+
+        throw new AiServiceException(
+            "Aucun modèle de lecture d'image n'est disponible sur ta clé Groq. Vérifie la configuration vision dans l'app.",
+            lastError);
     }
 
     public async Task<string> ExplainCardAsync(Flashcard card, CancellationToken cancellationToken = default)
@@ -196,8 +254,40 @@ public sealed class GroqAiService : IAiService
         double temperature,
         CancellationToken cancellationToken)
     {
+        try
+        {
+            using var timeout = CreateTimeoutSource(cancellationToken);
+            using var request = await CreateRequestAsync(messages, temperature, stream: false, timeout.Token).ConfigureAwait(false);
+            using var response = await SendWithRetryAsync(request, HttpCompletionOption.ResponseContentRead, timeout.Token)
+                .ConfigureAwait(false);
+
+            var body = await response.Content.ReadAsStringAsync(timeout.Token).ConfigureAwait(false);
+            var content = TryReadMessageContent(body);
+
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                _logger.LogWarning("Réponse Groq vide. Fin de génération : {Finish}", TryReadFinishReason(body));
+                throw new AiServiceException(
+                    "L'IA a renvoyé une réponse vide (budget de tokens probablement épuisé par le raisonnement). Reformulez ou réduisez la demande.");
+            }
+
+            return content.Trim();
+        }
+        catch (OperationCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            throw new AiServiceException(
+                "Groq n'a pas répondu dans le délai imparti (connexion lente ou quota). Réessaie dans un instant.", ex);
+        }
+    }
+
+    private async Task<string> CompleteVisionAsync(
+        string model,
+        string imageDataUrl,
+        string mimeType,
+        CancellationToken cancellationToken)
+    {
         using var timeout = CreateTimeoutSource(cancellationToken);
-        using var request = await CreateRequestAsync(messages, temperature, stream: false, timeout.Token).ConfigureAwait(false);
+        using var request = await CreateVisionRequestAsync(model, imageDataUrl, mimeType, timeout.Token).ConfigureAwait(false);
         using var response = await SendWithRetryAsync(request, HttpCompletionOption.ResponseContentRead, timeout.Token)
             .ConfigureAwait(false);
 
@@ -206,12 +296,110 @@ public sealed class GroqAiService : IAiService
 
         if (string.IsNullOrWhiteSpace(content))
         {
-            _logger.LogWarning("Réponse Groq vide. Fin de génération : {Finish}", TryReadFinishReason(body));
-            throw new AiServiceException(
-                "L'IA a renvoyé une réponse vide (budget de tokens probablement épuisé par le raisonnement). Reformulez ou réduisez la demande.");
+            _logger.LogWarning("Réponse vision Groq vide. Fin de génération : {Finish}", TryReadFinishReason(body));
+            throw new AiServiceException("L'IA n'a pas réussi à lire la photo. Reprends-la avec un meilleur cadrage.");
         }
 
         return content.Trim();
+    }
+
+    private async Task<HttpRequestMessage> CreateVisionRequestAsync(
+        string model,
+        string imageDataUrl,
+        string mimeType,
+        CancellationToken cancellationToken)
+    {
+        var key = await RequireKeyAsync().ConfigureAwait(false);
+        var payload = new Dictionary<string, object?>
+        {
+            ["model"] = model,
+            ["messages"] = new object[]
+            {
+                new
+                {
+                    role = "user",
+                    content = new object[]
+                    {
+                        new { type = "text", text = OcrPrompt },
+                        new { type = "image_url", image_url = new { url = imageDataUrl } }
+                    }
+                }
+            },
+            ["temperature"] = 0.1,
+            ["max_tokens"] = _options.MaxOutputTokens,
+            ["stream"] = false
+        };
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "chat/completions")
+        {
+            Content = JsonContent.Create(payload)
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", key);
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        _logger.LogDebug("Envoi d'une image {Mime} au modèle vision {Model}", mimeType, model);
+        return request;
+    }
+
+    private IReadOnlyList<string> GetVisionModels()
+    {
+        var models = new List<string>();
+        if (!string.IsNullOrWhiteSpace(_options.VisionModel))
+        {
+            models.Add(_options.VisionModel.Trim());
+        }
+
+        foreach (var fallback in _options.VisionFallbackModels)
+        {
+            if (!string.IsNullOrWhiteSpace(fallback) &&
+                !models.Contains(fallback.Trim(), StringComparer.OrdinalIgnoreCase))
+            {
+                models.Add(fallback.Trim());
+            }
+        }
+
+        return models.Count > 0
+            ? models
+            : ["meta-llama/llama-4-scout-17b-16e-instruct"];
+    }
+
+    private static bool IsModelUnavailable(AiApiException exception) =>
+        exception.StatusCode == 404 ||
+        (exception.StatusCode == 400 && exception.Message.Contains("model", StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>Réduit la photo avant l'envoi : Groq refuse les images trop lourdes.</summary>
+    private static async Task<(string DataUrl, string MimeType)> BuildImageDataUrlAsync(
+        string imagePath,
+        CancellationToken cancellationToken)
+    {
+        var bytes = await File.ReadAllBytesAsync(imagePath, cancellationToken).ConfigureAwait(false);
+        var mimeType = Path.GetExtension(imagePath).ToLowerInvariant() switch
+        {
+            ".png" => "image/png",
+            ".webp" => "image/webp",
+            _ => "image/jpeg"
+        };
+
+        try
+        {
+            using var source = new MemoryStream(bytes, writable: false);
+            var image = PlatformImage.FromStream(source);
+            const int maxDimension = 1600;
+
+            if (bytes.Length > 3_500_000 || image.Width > maxDimension || image.Height > maxDimension)
+            {
+                image = image.Downsize(maxDimension, true);
+                using var resized = new MemoryStream();
+                image.Save(resized, ImageFormat.Jpeg, 0.82f);
+                bytes = resized.ToArray();
+                mimeType = "image/jpeg";
+            }
+        }
+        catch (Exception)
+        {
+            // Format exotique (HEIC…) : on envoie l'original et Groq décidera.
+        }
+
+        return ($"data:{mimeType};base64,{Convert.ToBase64String(bytes)}", mimeType);
     }
 
     private async Task<HttpRequestMessage> CreateRequestAsync(
@@ -284,9 +472,17 @@ public sealed class GroqAiService : IAiService
             if (!response.IsSuccessStatusCode)
             {
                 var errorBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                var message = TryReadErrorMessage(errorBody) ?? $"Erreur Groq ({(int)response.StatusCode}).";
+                var status = (int)response.StatusCode;
+                var message = status switch
+                {
+                    401 or 403 => "Clé Groq refusée. Vérifie-la dans Profil › Clé API IA.",
+                    429 => "Quota Groq atteint. Attends une minute puis réessaie.",
+                    404 => "Le modèle Groq configuré est introuvable. Vérifie appsettings.json.",
+                    _ => TryReadErrorMessage(errorBody) ?? $"Erreur Groq ({status})."
+                };
+
                 response.Dispose();
-                throw new AiApiException(message, (int)response.StatusCode);
+                throw new AiApiException(message, status);
             }
 
             return response;

@@ -34,8 +34,10 @@
                 <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
                     <Label Text="{Binding StatusText}" Style="{StaticResource Headline}" FontSize="22"
                            HorizontalTextAlignment="Center" />
-                    <Label Text="L'IA structure tes cartes. Garde l'app ouverte quelques secondes."
+                    <Label Text="L'IA lit le support puis structure tes cartes. Garde l'app ouverte."
                            Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
+                    <Label Text="{Binding ElapsedLabel}" Style="{StaticResource Caption}" FontSize="11"
+                           HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
 
                 <!-- Contexte -->
@@ -74,12 +76,6 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <ActivityIndicator IsRunning="{Binding IsRunning}" IsVisible="{Binding IsRunning}"
-                                   Color="{StaticResource Primary}" />
-
-                <Button Text="Annuler" Style="{StaticResource GhostButton}"
-                        IsVisible="{Binding IsRunning}" Command="{Binding CancelCommand}" />
-
                 <!-- Erreur -->
                 <Border Style="{StaticResource Card}" IsVisible="{Binding HasError}"
                         BackgroundColor="{StaticResource DangerTint}" Stroke="{StaticResource Danger}">
@@ -100,6 +96,12 @@
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
+
+                <ActivityIndicator IsRunning="{Binding IsRunning}" IsVisible="{Binding IsRunning}"
+                                   Color="{StaticResource Primary}" />
+
+                <Button Text="Annuler" Style="{StaticResource GhostButton}"
+                        IsVisible="{Binding IsRunning}" Command="{Binding CancelCommand}" />
 
                 <Label Text="Astuce : si tu quittes l'app, la génération reprend au prochain lancement depuis le job enregistré."
                        Style="{StaticResource Caption}" FontSize="11" HorizontalTextAlignment="Center" />

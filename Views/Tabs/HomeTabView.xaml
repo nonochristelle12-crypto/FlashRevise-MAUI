@@ -53,15 +53,31 @@
                         <Label Text="Prêt à booster ta mémoire ?" Style="{StaticResource Body}" />
                     </VerticalStackLayout>
 
-                    <Border Grid.Column="1" Style="{StaticResource Chip}" BackgroundColor="{StaticResource WarningTint}"
-                            Stroke="{StaticResource Warning}" VerticalOptions="Center" IsVisible="{Binding HasStreak}">
-                        <HorizontalStackLayout Spacing="4">
-                            <Label Text="{StaticResource IconLocalFireDepartment}" FontFamily="MaterialSymbols"
-                                   FontSize="16" TextColor="{StaticResource Warning}" />
-                            <Label Text="{Binding Dashboard.StreakDays, StringFormat='{0} jours'}"
-                                   Style="{StaticResource ChipLabel}" TextColor="{StaticResource Warning}" />
-                        </HorizontalStackLayout>
-                    </Border>
+                    <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                        <Border Style="{StaticResource Chip}" BackgroundColor="{StaticResource PrimaryTintSoft}"
+                                Stroke="{StaticResource Primary}" Padding="10,5" IsVisible="{Binding IsSignedOut}">
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="{StaticResource IconPerson}" FontFamily="MaterialSymbols"
+                                       FontSize="14" TextColor="{StaticResource PrimaryTint}"
+                                       VerticalOptions="Center" />
+                                <Label Text="Se connecter" Style="{StaticResource ChipLabel}"
+                                       TextColor="{StaticResource PrimaryTint}" />
+                            </HorizontalStackLayout>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenLoginCommand}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+
+                        <Border Style="{StaticResource Chip}" BackgroundColor="{StaticResource WarningTint}"
+                                Stroke="{StaticResource Warning}" VerticalOptions="Center" IsVisible="{Binding HasStreak}">
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="{StaticResource IconLocalFireDepartment}" FontFamily="MaterialSymbols"
+                                       FontSize="16" TextColor="{StaticResource Warning}" />
+                                <Label Text="{Binding Dashboard.StreakDays, StringFormat='{0} jours'}"
+                                       Style="{StaticResource ChipLabel}" TextColor="{StaticResource Warning}" />
+                            </HorizontalStackLayout>
+                        </Border>
+                    </HorizontalStackLayout>
                 </Grid>
 
                 <!-- Bandeau hors-ligne -->
@@ -147,10 +163,10 @@
                         <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
                             <Label Text="{StaticResource IconDocumentScanner}" FontFamily="MaterialSymbols" FontSize="22"
                                    TextColor="{StaticResource Tertiary}" HorizontalOptions="Center" />
-                            <Label Text="Scanner doc" Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
+                            <Label Text="Scanner" Style="{StaticResource Caption}" HorizontalTextAlignment="Center" />
                         </VerticalStackLayout>
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding OpenAiCommand}" />
+                            <TapGestureRecognizer Command="{Binding OpenScanCommand}" />
                         </Border.GestureRecognizers>
                     </Border>
                 </Grid>

@@ -4,6 +4,56 @@ Toutes les évolutions notables de FlashRevise sont consignées ici.
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et le projet suit
 [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [1.2.0] — 2026-10-25
+
+### Ajouté
+
+#### IA : lecture de photos et scanner
+
+- `IAiService.ExtractImageTextAsync` : transcription d'une photo ou d'un scan par le modèle vision
+  Groq (`Groq:VisionModel`, repli automatique sur `VisionFallbackModels`), avec compression de
+  l'image à 1600 px et encodage base64. Le texte, les formules et le code source sont conservés.
+- Écran **Générer avec l'IA** : boutons **Scanner une photo** (caméra) et **Galerie**, aperçu de la
+  photo, permission Android `CAMERA`.
+- Raccourci **Scanner** sur l'accueil : ouvre l'écran IA et déclenche directement la caméra.
+- Champ libre **Matière / nom du paquet** : un nom inconnu crée automatiquement la matière ;
+  le sélecteur de matières existantes reste disponible.
+
+### Corrigé
+
+- Génération IA bloquée à 90 % sur « Dernière mise en forme… » : le délai d'attente Groq était
+  interprété comme une annulation utilisateur et aucune erreur n'était affichée. Le délai, les
+  erreurs HTTP (401/429/404) et les réponses vides sont désormais remontés avec un bouton
+  **Réessayer** ; la progression continue lentement au lieu de plafonner à 90 %.
+- Budget de sortie Groq porté à 8192 tokens pour éviter les réponses JSON tronquées.
+- Les photos ne déclenchent plus l'erreur « extraction indisponible » : elles passent par la
+  transcription vision avant la génération des cartes.
+
+## [1.1.0] — 2026-10-25
+
+### Ajouté
+
+#### Authentification (API FlashRevise)
+
+- `IAuthService` / `AuthService` : inscription, connexion, rafraîchissement des jetons (rotation),
+  déconnexion, mot de passe oublié, `GET`/`DELETE /v1/account` et test `GET /health/live`.
+- Écrans `login`, `register` et `forgot-password` : validation locale du mot de passe
+  (8 caractères minimum, une majuscule, un chiffre), messages d'erreur traduits depuis les codes
+  de l'API (`invalid_credentials`, `account_locked`, `email_already_used`, `consent_required`).
+- Entrée « Se connecter » sur l'accueil invité et carte **Compte** dans le profil : état connecté,
+  e-mail, déconnexion, suppression définitive du compte avec double confirmation.
+- Jetons d'accès et de rafraîchissement conservés **uniquement** dans `SecureStorage` ; seuls le nom
+  et l'e-mail publics sont mis en cache dans les préférences.
+- Adresse de l'API configurable dans le profil (défaut Windows `localhost:5047`, émulateur Android
+  `10.0.2.2:5047`, téléphone = IP LAN du PC) avec bouton « Tester le serveur ».
+- Android : `android:usesCleartextTraffic="true"` pour joindre l'API HTTP de développement.
+- Le profil local reprend le nom affiché du compte à la connexion et repasse en invité à la déconnexion.
+
+### Modifié
+
+- README et ARCHITECTURE : lancement de l'API, secret JWT fourni par variable d'environnement,
+  endpoints, configuration réseau téléphone / PC et limites du mode HTTP en développement.
+
 ## [1.0.0] — 2026-10-25
 
 Première version livrée, Android (priorité) et Windows PC.

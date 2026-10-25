@@ -20,6 +20,9 @@ public interface IAiService
     /// <summary>Génère des flashcards structurées à partir d'un texte source.</summary>
     Task<IReadOnlyList<AiGeneratedCard>> GenerateFlashcardsAsync(string sourceText, int count, CancellationToken cancellationToken = default);
 
+    /// <summary>Transcrit le texte, le code et les formules visibles sur une photo ou un scan.</summary>
+    Task<string> ExtractImageTextAsync(string imagePath, CancellationToken cancellationToken = default);
+
     /// <summary>Explique une carte avec un angle pédagogique.</summary>
     Task<string> ExplainCardAsync(Flashcard card, CancellationToken cancellationToken = default);
 

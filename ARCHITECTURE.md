@@ -22,6 +22,7 @@ d'un ViewModel vers une View (et inversement en dehors du code-behind purement U
 │   NotificationService  OfflineService  SyncService  StorageService   │
 │   BookService  DataSeeder  AppBootstrapper                           │
 │   Services/Ai/  GroqAiService  SecureApiKeyStore  AiDraftStore       │
+│   Services/Auth/  AuthService (API d'authentification, JWT)          │
 └───────────────────────────┬──────────────────────────────────────────┘
                             │ interfaces de repositories
 ┌───────────────────────────▼──────────────────────────────────────────┐
@@ -52,6 +53,7 @@ d'un ViewModel vers une View (et inversement en dehors du code-behind purement U
 | Repositories | singleton | 11 repositories |
 | Services métier | singleton | SM-2, sessions, stats, rappels, offline, sync, stockage, livres |
 | `GroqAiService` | typé `HttpClient` | `BaseAddress` et timeout issus de la configuration |
+| `IAuthService` | singleton | client de l'API d'authentification (20 s de timeout, jetons en `SecureStorage`) |
 | `SyncService` | `HttpClient` nommé | timeout 30 s |
 | ViewModels | transient | un par écran |
 | Pages | transient | résolues par `ServiceRouteFactory<TPage>` |
@@ -304,12 +306,18 @@ sequenceDiagram
     participant J as AiGenerationJobRepository
     participant RV as AiReviewViewModel
 
-    U->>UV: texte ou fichier (PDF/image)
-    UV->>ST: ExtractTextAsync(file)
+    U->>UV: texte, fichier PDF/TXT ou photo (caméra/galerie)
+    UV->>ST: ExtractTextAsync(fichier texte ou PDF)
     ST-->>UV: texte normalisé (40 caractères min.)
-    UV->>UV: AiDraftStore = { sujet, source, count }
+    UV->>UV: Résolution de la matière par nom (création si inconnue)
+    UV->>UV: AiDraftStore = { sujet, source, image?, count }
     UV->>LV: navigation ai-loading
     LV->>J: Insert job { Running }
+    alt source image
+        LV->>AI: ExtractImageTextAsync(photo)
+        AI->>AI: compression ≤ 1600 px + base64
+        AI-->>LV: transcription (texte, code, formules)
+    end
     LV->>AI: GenerateFlashcardsAsync(texte, count)
     AI->>AI: prompt JSON + retries/backoff + timeout
     AI-->>LV: liste AiGeneratedCard
@@ -321,9 +329,14 @@ sequenceDiagram
     RV->>RV: réinitialise le draft
 ```
 
-- Source acceptées : texte collé, **PDF** (PdfPig), **image** (OCR/description via le modèle vision).
+- Sources acceptées : texte collé, **PDF** (PdfPig), **photo ou scan** (transcription par le modèle
+  vision `Groq:VisionModel`, avec repli sur `VisionFallbackModels`). La photo est redimensionnée à
+  1600 px et encodée en base64 avant l'appel ; le modèle de génération reste `Groq:Model`.
+- La matière est saisie librement ; un nom inconnu est créé automatiquement (`SubjectService.SaveAsync`).
 - Le nombre de cartes est borné (5 / 10 / 15 / 20).
 - En cas d'échec, le job passe en `Failed` avec message ; l'écran propose **Réessayer** ou **Retour**.
+- Un délai dépassé est distingué d'une annulation utilisateur : la progression s'arrête et l'erreur
+  réelle est affichée (le minuteur de progression ne bloque plus sur un faux 90 %).
 - L'annulation (`CancellationToken`) interrompt la requête HTTP et marque le job annulé.
 
 ### 5.3 Chat tuteur en streaming
@@ -357,11 +370,74 @@ sequenceDiagram
 | Quota | message dédié sur 429 |
 | Parsing | extraction JSON tolérante (fences Markdown), validation des champs |
 | Streaming | lecture ligne à ligne SSE (`data: ...`), fin sur `[DONE]` |
-| Erreurs | exceptions typées : `AiNotConfiguredException`, `AiQuotaExceededException`, `AiServiceException` |
+| Erreurs | exceptions typées : `AiNotConfiguredException`, `AiApiException` (401/429/404), `AiServiceException` (délai, réponse vide, image illisible) |
 
 ---
 
-## 6. Mode hors ligne et synchronisation
+## 6. Authentification (API FlashRevise)
+
+Le compte est **facultatif** : sans session, l'app fonctionne en mode invité avec SQLite local.
+La connexion ajoute l'identité serveur ; les cartes restent locales.
+
+### 6.1 Client HTTP
+
+| Élément | Rôle |
+| --- | --- |
+| `IAuthService` / `AuthService` (`Services/Auth/`) | appels `/v1/auth/*`, `/v1/account`, `/health/live` |
+| `AuthException` | message français, `Code` de l'API et code HTTP |
+| `SecureStorage` | jetons d'accès (15 min) et de rafraîchissement (30 jours) |
+| `Preferences` | cache du profil public (`AuthUser`), adresse de l'API (`AuthBaseUrl`) |
+| `AndroidManifest` | `usesCleartextTraffic` pour l'API HTTP de développement |
+
+L'URL de base est résolue dans cet ordre : préférence utilisateur (Profil → Compte) → `Auth:BaseUrl`
+de `appsettings.json` → défaut plateforme (`localhost:5047` Windows, `10.0.2.2:5047` émulateur Android).
+Aucun secret n'est stocké dans la configuration.
+
+### 6.2 Connexion et rafraîchissement
+
+```mermaid
+sequenceDiagram
+    participant U as Utilisateur
+    participant VM as LoginViewModel
+    participant A as AuthService
+    participant API as FlashRevise API
+    participant SS as SecureStorage
+
+    U->>VM: e-mail + mot de passe
+    VM->>A: LoginAsync
+    A->>API: POST /v1/auth/login
+    API-->>A: TokenResponse (access 15 min, refresh 30 j)
+    A->>SS: jetons
+    A->>A: cache profil public (Preferences)
+    VM->>VM: profil local.Name = User.DisplayName
+    VM->>VM: navigation //main
+
+    Note over A,API: GET /v1/account ou DELETE /v1/account avec un access expiré
+    A->>API: POST /v1/auth/refresh (rotation)
+    API-->>A: nouveaux jetons
+    A->>API: rejoue la requête avec le nouvel access
+```
+
+- Les erreurs serveur (`ProblemDetails.code`) sont traduites en français
+  (`invalid_credentials`, `account_locked`, `email_already_used`, `consent_required`, `validation_failed`).
+- Un échec réseau ne supprime pas la session : elle est réessayée plus tard. Un 401/400 sur le refresh
+  efface les jetons.
+- Déconnexion et suppression effacent les jetons et le cache, puis repassent le profil local en invité.
+
+### 6.3 Écrans et navigation
+
+| Route | Écran | Point d'entrée |
+| --- | --- | --- |
+| `login` | Connexion | accueil invité (chip « Se connecter »), profil, inscription |
+| `register` | Création de compte | profil, connexion |
+| `forgot-password` | Mot de passe oublié | connexion |
+
+La carte **Compte** du profil expose l'état, l'e-mail, les actions de session et l'adresse du serveur
+avec un test `/health/live`.
+
+---
+
+## 7. Mode hors ligne et synchronisation
 
 - **Détection** : `OfflineService` s'appuie sur `Connectivity` et expose `IsOnline`, `OnlineChanged`,
   `PendingSyncCount`, `PendingSyncCountChanged`.
@@ -376,7 +452,7 @@ sequenceDiagram
 
 ---
 
-## 7. Notifications et rappels
+## 8. Notifications et rappels
 
 - `ReminderService` persiste le rappel puis délègue la planification à `NotificationService`.
 - `Plugin.LocalNotification` planifie une notification **récurrente** (quotidienne ou hebdomadaire).
@@ -389,7 +465,7 @@ sequenceDiagram
 
 ---
 
-## 8. Thème et design system
+## 9. Thème et design system
 
 | Fichier | Contenu |
 | --- | --- |
@@ -419,7 +495,7 @@ de rendu silencieuses au chargement des pages.
 
 ---
 
-## 9. Conventions de code
+## 10. Conventions de code
 
 - **MVVM strict** : `[ObservableProperty]` en **propriétés partielles** (AOT/WinRT compatible),
   `[RelayCommand]` pour les commandes ; un `RelayCommand` accepte **au plus un paramètre**
@@ -435,7 +511,7 @@ de rendu silencieuses au chargement des pages.
 
 ---
 
-## 10. Décisions techniques notables
+## 11. Décisions techniques notables
 
 | Décision | Raison |
 | --- | --- |

@@ -74,6 +74,63 @@
                     </Border>
                 </Grid>
 
+                <!-- Compte -->
+                <Border Style="{StaticResource CardLarge}">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                            <Border Style="{StaticResource Avatar}" WidthRequest="40" HeightRequest="40">
+                                <Label Text="{StaticResource IconPerson}" FontFamily="MaterialSymbols" FontSize="20"
+                                       TextColor="{StaticResource PrimaryTint}" HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="Compte FlashRevise" Style="{StaticResource Title}" FontSize="16" />
+                                <Label Text="{Binding AccountSubtitle}" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Border Grid.Column="2" Style="{StaticResource Chip}" Padding="8,3"
+                                    BackgroundColor="{StaticResource TertiaryTint}" Stroke="{StaticResource Tertiary}"
+                                    IsVisible="{Binding IsSignedIn}">
+                                <Label Text="Connecté" Style="{StaticResource ChipLabel}"
+                                       TextColor="{StaticResource Tertiary}" />
+                            </Border>
+                        </Grid>
+
+                        <VerticalStackLayout Spacing="8" IsVisible="{Binding IsSignedOut}">
+                            <Button Text="Se connecter" Style="{StaticResource PrimaryButton}" HeightRequest="46"
+                                    Command="{Binding OpenLoginCommand}" />
+                            <Button Text="Créer un compte" Style="{StaticResource SecondaryButton}"
+                                    HeightRequest="46" Command="{Binding OpenRegisterCommand}" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="8" IsVisible="{Binding IsSignedIn}">
+                            <Button Text="Se déconnecter" Style="{StaticResource SecondaryButton}" HeightRequest="46"
+                                    Command="{Binding LogoutCommand}" IsEnabled="{Binding IsNotAuthBusy}" />
+                            <Button Text="Supprimer le compte" Style="{StaticResource DangerButton}"
+                                    HeightRequest="46" Command="{Binding DeleteAccountCommand}"
+                                    IsEnabled="{Binding IsNotAuthBusy}" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Adresse de l'API d'authentification" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Entry Text="{Binding AuthBaseUrlInput}" Keyboard="Url"
+                                       Placeholder="http://192.168.1.10:5047/" />
+                            </Border>
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                <Button Text="Tester" Style="{StaticResource SecondaryButton}"
+                                        HeightRequest="42" Command="{Binding TestServerCommand}"
+                                        IsEnabled="{Binding IsNotAuthBusy}" />
+                                <Button Grid.Column="1" Text="Enregistrer" Style="{StaticResource GhostButton}"
+                                        HeightRequest="42" Command="{Binding SaveServerUrlCommand}" />
+                            </Grid>
+                            <Label Text="{Binding ServerHint}" Style="{StaticResource Caption}" FontSize="11" />
+                            <Label Text="{Binding AuthStatusMessage}" Style="{StaticResource Caption}"
+                                   TextColor="{StaticResource Secondary}"
+                                   IsVisible="{Binding HasAuthStatusMessage}" />
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Identité -->
                 <Border Style="{StaticResource CardLarge}">
                     <VerticalStackLayout Spacing="12">

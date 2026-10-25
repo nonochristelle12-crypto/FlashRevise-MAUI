@@ -40,6 +40,9 @@ public partial class AppShell : Shell
         AddRoute<Views.Settings.GoalsBooksPage>(Routes.GoalsBooks);
         AddRoute<Views.Settings.AchievementsPage>(Routes.Achievements);
         AddRoute<Views.Settings.OfflineStatePage>(Routes.OfflineState);
+        AddRoute<Views.Auth.LoginPage>(Routes.Login);
+        AddRoute<Views.Auth.RegisterPage>(Routes.Register);
+        AddRoute<Views.Auth.ForgotPasswordPage>(Routes.ForgotPassword);
     }
 
     private void AddRoute<TPage>(string route) where TPage : Page

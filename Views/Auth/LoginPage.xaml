@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.Auth.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="Connexion" Style="{StaticResource Title}" VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20,4,20,32" Spacing="16" MaximumWidthRequest="520" HorizontalOptions="Center">
+
+                <Border Style="{StaticResource CardLarge}" Background="{StaticResource PrimaryGradient}"
+                        StrokeThickness="0" Shadow="{StaticResource FloatingShadow}">
+                    <VerticalStackLayout Spacing="10">
+                        <Border Style="{StaticResource LogoBadge}" WidthRequest="44" HeightRequest="44"
+                                HorizontalOptions="Start" BackgroundColor="#33FFFFFF">
+                            <Label Text="{StaticResource IconBolt}" FontFamily="MaterialSymbols" FontSize="24"
+                                   TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <Label Text="Retrouve ta progression" Style="{StaticResource Display}" FontSize="26"
+                               TextColor="White" />
+                        <Label Text="Connecte-toi à ton compte FlashRevise. Tes cartes et tes révisions restent disponibles hors ligne."
+                               Style="{StaticResource Body}" TextColor="#D9FFFFFF" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource CardLarge}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Mon compte" Style="{StaticResource Overline}" />
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Adresse e-mail" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Entry Text="{Binding Email}" Keyboard="Email" Placeholder="vous@exemple.com"
+                                       MaxLength="254" ReturnType="Next" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Mot de passe" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Ton mot de passe"
+                                       MaxLength="128" ReturnType="Go" ReturnCommand="{Binding SignInCommand}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Button Text="Mot de passe oublié ?" Style="{StaticResource GhostButton}"
+                                HorizontalOptions="End" Command="{Binding OpenForgotPasswordCommand}" />
+
+                        <Border IsVisible="{Binding HasError}" BackgroundColor="{StaticResource DangerTint}"
+                                Stroke="{StaticResource Danger}" Padding="12,8">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}"
+                                   TextColor="{StaticResource Danger}" />
+                        </Border>
+
+                        <Grid>
+                            <Button Text="Se connecter" Style="{StaticResource PrimaryButton}"
+                                    Command="{Binding SignInCommand}" IsEnabled="{Binding IsNotBusy}" />
+                            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                                               Color="White" HorizontalOptions="End" VerticalOptions="Center"
+                                               WidthRequest="20" HeightRequest="20" Margin="0,0,16,0"
+                                               InputTransparent="True" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Pas encore de compte ?" Style="{StaticResource LabelStrong}" />
+                        <Label Text="Crée un compte pour retrouver ton profil et tes réglages sur tes appareils."
+                               Style="{StaticResource Caption}" />
+                        <Button Text="Créer un compte" Style="{StaticResource SecondaryButton}"
+                                Command="{Binding OpenRegisterCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Button Text="Continuer sans compte" Style="{StaticResource GhostButton}"
+                        Command="{Binding ContinueAsGuestCommand}" />
+
+                <Label Text="{Binding ServerLabel, StringFormat='Serveur : {0}'}" Style="{StaticResource Caption}"
+                       FontSize="11" HorizontalTextAlignment="Center" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

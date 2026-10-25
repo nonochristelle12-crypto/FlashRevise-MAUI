@@ -32,7 +32,7 @@
                         </HorizontalStackLayout>
                         <Label Text="Transforme ton cours en cartes prêtes à réviser." Style="{StaticResource Headline}"
                                FontSize="22" TextColor="White" />
-                        <Label Text="Colle un texte ou importe un PDF : l'IA propose des cartes, tu gardes la main sur ce qui est enregistré."
+                        <Label Text="Colle un texte, importe un PDF ou scanne une photo : l'IA lit le document et propose des cartes, tu gardes la main sur ce qui est enregistré."
                                Style="{StaticResource Caption}" TextColor="#D9FFFFFF" />
                     </VerticalStackLayout>
                 </Border>
@@ -75,12 +75,10 @@
 
                 <!-- Matières absentes -->
                 <Border Style="{StaticResource Card}" IsVisible="{Binding HasSubjects, Converter={StaticResource InvertBool}}">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Aucune matière pour l'instant" Style="{StaticResource LabelStrong}" />
-                        <Label Text="Les cartes générées doivent être rangées dans une matière. Crée ta première matière en quelques secondes."
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Ta première matière" Style="{StaticResource LabelStrong}" />
+                        <Label Text="Saisis son nom dans « Matière / nom du paquet » : elle sera créée automatiquement avec les cartes générées."
                                Style="{StaticResource Caption}" />
-                        <Button Text="Créer une matière" Style="{StaticResource SecondaryButton}" HeightRequest="46"
-                                Command="{Binding AddSubjectCommand}" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -92,11 +90,21 @@
                             <Label Text="{StaticResource IconUploadFile}" Style="{StaticResource Icon}" FontSize="22"
                                    TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Importer un document" Style="{StaticResource LabelStrong}" />
-                                <Label Text="PDF, TXT, MD ou CSV" Style="{StaticResource Caption}" />
+                                <Label Text="Document, scan ou photo" Style="{StaticResource LabelStrong}" />
+                                <Label Text="PDF, TXT, MD, CSV, JPG ou PNG" Style="{StaticResource Caption}" />
                             </VerticalStackLayout>
                             <Switch Grid.Column="2" IsToggled="{Binding IsFileMode}" VerticalOptions="Center" />
                         </Grid>
+
+                        <!-- Scanner visible en permanence -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <Button Text="Scanner une photo" Style="{StaticResource SecondaryButton}" HeightRequest="46"
+                                    Command="{Binding ScanPhotoCommand}" IsVisible="{Binding CanScan}" />
+                            <Button Grid.Column="1" Text="Galerie" Style="{StaticResource SecondaryButton}" HeightRequest="46"
+                                    Command="{Binding PickPhotoCommand}" />
+                        </Grid>
+                        <Label Text="Le scanner lit le texte, les formules et le code affichés sur la photo."
+                               Style="{StaticResource Caption}" FontSize="11" />
 
                         <!-- Texte libre -->
                         <VerticalStackLayout Spacing="8" IsVisible="{Binding IsFileMode, Converter={StaticResource InvertBool}}">
@@ -129,6 +137,11 @@
                                 </Grid>
                             </Border>
 
+                            <Border Style="{StaticResource Card}" Padding="0" StrokeThickness="0"
+                                    IsVisible="{Binding IsImageSource}">
+                                <Image Source="{Binding FilePreviewPath}" HeightRequest="160" Aspect="AspectFill" />
+                            </Border>
+
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                                 <Button Text="Choisir un fichier" Style="{StaticResource SecondaryButton}" HeightRequest="46"
                                         Command="{Binding ImportFileCommand}" />
@@ -152,11 +165,17 @@
                     <VerticalStackLayout Spacing="16">
 
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Matière de destination" Style="{StaticResource Caption}" />
+                            <Label Text="Matière / nom du paquet" Style="{StaticResource Caption}" />
                             <Border Style="{StaticResource InputWrap}">
+                                <Entry Text="{Binding SubjectNameInput}" MaxLength="80"
+                                       Placeholder="Ex. Droit constitutionnel" />
+                            </Border>
+                            <Label Text="Saisis un nouveau nom pour créer la matière automatiquement."
+                                   Style="{StaticResource Caption}" FontSize="11" />
+                            <Border Style="{StaticResource InputWrap}" IsVisible="{Binding HasSubjects}">
                                 <Picker ItemsSource="{Binding SubjectNames}"
                                         SelectedIndex="{Binding SelectedSubjectIndex}"
-                                        Title="Choisis une matière" />
+                                        Title="Ou choisir une matière existante" />
                             </Border>
                         </VerticalStackLayout>
 

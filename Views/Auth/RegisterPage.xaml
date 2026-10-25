@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FlashRevise.ViewModels"
+             x:Class="FlashRevise.Views.Auth.RegisterPage"
+             x:DataType="vm:RegisterViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvas}, Dark={StaticResource DarkCanvas}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="8" Padding="12,10">
+            <Button Text="{StaticResource IconArrowBack}" Style="{StaticResource IconButton}"
+                    Command="{Binding GoBackCommand}" />
+            <Label Grid.Column="1" Text="Créer un compte" Style="{StaticResource Title}" VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20,4,20,32" Spacing="16" MaximumWidthRequest="520" HorizontalOptions="Center">
+
+                <Border Style="{StaticResource CardLarge}" Background="{StaticResource PrimaryGradient}"
+                        StrokeThickness="0" Shadow="{StaticResource FloatingShadow}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Rejoins FlashRevise" Style="{StaticResource Display}" FontSize="26"
+                               TextColor="White" />
+                        <Label Text="Un compte pour retrouver ton profil et tes réglages. La révision reste utilisable sans compte."
+                               Style="{StaticResource Body}" TextColor="#D9FFFFFF" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource CardLarge}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Informations" Style="{StaticResource Overline}" />
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Nom affiché" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Entry Text="{Binding DisplayName}" Placeholder="Ton prénom ou pseudo" MaxLength="40"
+                                       ReturnType="Next" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Adresse e-mail" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Entry Text="{Binding Email}" Keyboard="Email" Placeholder="vous@exemple.com"
+                                       MaxLength="254" ReturnType="Next" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Mot de passe" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Entry Text="{Binding Password}" IsPassword="True" Placeholder="8 caractères min."
+                                       MaxLength="128" ReturnType="Next" />
+                            </Border>
+                            <Label Text="Au moins 8 caractères, une majuscule et un chiffre."
+                                   Style="{StaticResource Caption}" FontSize="11" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Confirme le mot de passe" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Entry Text="{Binding ConfirmPassword}" IsPassword="True"
+                                       Placeholder="Répète le mot de passe" MaxLength="128" ReturnType="Done"
+                                       ReturnCommand="{Binding RegisterCommand}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Niveau d'études" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputWrap}">
+                                <Picker Title="Choisir un niveau" ItemsSource="{Binding StudyLevels}"
+                                        SelectedItem="{Binding StudyLevel}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                            <CheckBox IsChecked="{Binding ConsentTerms}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="J'accepte les conditions d'utilisation de FlashRevise."
+                                   Style="{StaticResource Caption}" VerticalOptions="Center" />
+                        </Grid>
+
+                        <Border IsVisible="{Binding HasError}" BackgroundColor="{StaticResource DangerTint}"
+                                Stroke="{StaticResource Danger}" Padding="12,8">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <Label Text="{Binding ErrorMessage}" Style="{StaticResource Caption}"
+                                   TextColor="{StaticResource Danger}" />
+                        </Border>
+
+                        <Grid>
+                            <Button Text="Créer mon compte" Style="{StaticResource PrimaryButton}"
+                                    Command="{Binding RegisterCommand}" IsEnabled="{Binding IsNotBusy}" />
+                            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                                               Color="White" HorizontalOptions="End" VerticalOptions="Center"
+                                               WidthRequest="20" HeightRequest="20" Margin="0,0,16,0"
+                                               InputTransparent="True" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource Card}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Label Text="Déjà un compte ?" Style="{StaticResource Caption}" VerticalOptions="Center" />
+                        <Button Grid.Column="1" Text="Se connecter" Style="{StaticResource GhostButton}"
+                                Command="{Binding OpenLoginCommand}" />
+                    </Grid>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

@@ -27,6 +27,7 @@ public partial class AiLoadingViewModel : BaseViewModel
     private CancellationTokenSource? _cancellation;
     private IDispatcherTimer? _timer;
     private int _stepIndex;
+    private int _elapsedSeconds;
     private bool _started;
 
     [ObservableProperty]
@@ -46,6 +47,9 @@ public partial class AiLoadingViewModel : BaseViewModel
 
     [ObservableProperty]
     public partial string RequestLabel { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string ElapsedLabel { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial bool IsRunning { get; set; }
@@ -93,9 +97,14 @@ public partial class AiLoadingViewModel : BaseViewModel
     {
         ClearError();
 
-        if (_draft.SubjectId == 0 || string.IsNullOrWhiteSpace(_draft.SourceText))
+        var isImage = _draft.SourceType == AiSourceType.Image &&
+                      !string.IsNullOrWhiteSpace(_draft.SourceImagePath);
+
+        if (_draft.SubjectId == 0 ||
+            (isImage && !File.Exists(_draft.SourceImagePath)) ||
+            (!isImage && string.IsNullOrWhiteSpace(_draft.SourceText)))
         {
-            ErrorMessage = "Aucun contenu à traiter. Reviens à l'écran précédent pour choisir un cours.";
+            ErrorMessage = "Aucun contenu à traiter. Reviens à l'écran précédent pour choisir un cours ou scanner une photo.";
             IsRunning = false;
             OnPropertyChanged(nameof(CanRetry));
             return;
@@ -110,8 +119,10 @@ public partial class AiLoadingViewModel : BaseViewModel
         IsDone = false;
         Progress = 0;
         ProgressCaption = "0%";
+        ElapsedLabel = string.Empty;
         _stepIndex = 0;
-        StatusText = Steps[0];
+        _elapsedSeconds = 0;
+        StatusText = isImage ? "Lecture de la photo…" : Steps[0];
         StartTimer();
 
         var job = new AiGenerationJob
@@ -128,7 +139,18 @@ public partial class AiLoadingViewModel : BaseViewModel
             await _jobs.SaveAsync(job);
             _draft.JobId = job.Id;
 
-            var cards = await _ai.GenerateFlashcardsAsync(_draft.SourceText, _draft.RequestedCount, _cancellation.Token);
+            IReadOnlyList<AiGeneratedCard> cards;
+            if (isImage)
+            {
+                var extracted = await _ai.ExtractImageTextAsync(_draft.SourceImagePath, _cancellation.Token);
+                _draft.SourceText = extracted;
+                StatusText = "Photo lue, rédaction des cartes…";
+                cards = await _ai.GenerateFlashcardsAsync(extracted, _draft.RequestedCount, _cancellation.Token);
+            }
+            else
+            {
+                cards = await _ai.GenerateFlashcardsAsync(_draft.SourceText, _draft.RequestedCount, _cancellation.Token);
+            }
 
             job.Status = AiJobStatus.Completed;
             job.ResultJson = JsonSerializer.Serialize(cards);
@@ -141,6 +163,7 @@ public partial class AiLoadingViewModel : BaseViewModel
             StopTimer();
             Progress = 1;
             ProgressCaption = "100%";
+            ElapsedLabel = string.Empty;
             StatusText = "Cartes prêtes !";
             IsDone = true;
 
@@ -150,18 +173,29 @@ public partial class AiLoadingViewModel : BaseViewModel
                 await Shell.Current.GoToAsync(Routes.AiReview);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (_cancellation is { IsCancellationRequested: true })
         {
             job.Status = AiJobStatus.Failed;
             job.ErrorMessage = "Génération annulée.";
             await TrySaveJobAsync(job);
+            StatusText = "Génération annulée";
+            ProgressCaption = "—";
+        }
+        catch (OperationCanceledException ex)
+        {
+            job.Status = AiJobStatus.Failed;
+            job.ErrorMessage = "Délai dépassé.";
+            await TrySaveJobAsync(job);
+            _draft.ErrorMessage = ex.Message;
+            ShowFailure("Délai d'attente dépassé. Vérifie ta connexion puis réessaie.");
         }
         catch (AiNotConfiguredException ex)
         {
             job.Status = AiJobStatus.Failed;
             job.ErrorMessage = ex.Message;
             await TrySaveJobAsync(job);
-            ErrorMessage = ex.Message;
+            _draft.ErrorMessage = ex.Message;
+            ShowFailure(ex.Message);
         }
         catch (Exception ex)
         {
@@ -169,7 +203,7 @@ public partial class AiLoadingViewModel : BaseViewModel
             job.ErrorMessage = Truncate(ex.Message);
             await TrySaveJobAsync(job);
             _draft.ErrorMessage = ex.Message;
-            ReportError(ex);
+            ShowFailure(ex.Message);
         }
         finally
         {
@@ -178,6 +212,15 @@ public partial class AiLoadingViewModel : BaseViewModel
             _cancellation?.Dispose();
             _cancellation = null;
         }
+    }
+
+    private void ShowFailure(string message)
+    {
+        StopTimer();
+        StatusText = "La génération a échoué";
+        ProgressCaption = "Erreur";
+        ElapsedLabel = string.Empty;
+        ErrorMessage = message;
     }
 
     [RelayCommand]
@@ -211,7 +254,7 @@ public partial class AiLoadingViewModel : BaseViewModel
         }
 
         _timer = dispatcher.CreateTimer();
-        _timer.Interval = TimeSpan.FromSeconds(1.6);
+        _timer.Interval = TimeSpan.FromSeconds(1);
         _timer.Tick += (_, _) =>
         {
             if (!IsRunning)
@@ -219,10 +262,25 @@ public partial class AiLoadingViewModel : BaseViewModel
                 return;
             }
 
-            Progress = Math.Min(0.9, Progress + 0.07);
+            _elapsedSeconds++;
+            // Progression asymptotique : elle avance sans jamais bloquer l'utilisateur sur un faux 90 %.
+            Progress = Math.Min(0.97, Progress + ((0.97 - Progress) * 0.055));
             ProgressCaption = $"{Math.Round(Progress * 100)}%";
-            _stepIndex = Math.Min(Steps.Length - 1, _stepIndex + 1);
-            StatusText = Steps[_stepIndex];
+            ElapsedLabel = $"{_elapsedSeconds} s écoulées";
+
+            if (_elapsedSeconds == 40)
+            {
+                StatusText = "L'IA termine la rédaction…";
+            }
+            else if (_elapsedSeconds == 70)
+            {
+                StatusText = "Encore un instant, la réponse arrive…";
+            }
+            else if (_elapsedSeconds < 8)
+            {
+                _stepIndex = Math.Min(Steps.Length - 2, _stepIndex + 1);
+                StatusText = Steps[_stepIndex];
+            }
         };
         _timer.Start();
     }

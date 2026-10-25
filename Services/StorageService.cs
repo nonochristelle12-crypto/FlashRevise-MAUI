@@ -83,9 +83,14 @@ public sealed class StorageService : IStorageService
 
     public async Task<string> SaveImageAsync(string sourcePath, string suggestedName)
     {
+        await using var source = File.OpenRead(sourcePath);
+        return await SaveImageAsync(source, suggestedName).ConfigureAwait(false);
+    }
+
+    public async Task<string> SaveImageAsync(Stream source, string suggestedName)
+    {
         Directory.CreateDirectory(ImportsDirectory);
         var destination = Path.Combine(ImportsDirectory, $"{DateTime.UtcNow:yyyyMMddHHmmss}_{Sanitize(suggestedName)}");
-        await using var source = File.OpenRead(sourcePath);
         await using var target = File.Create(destination);
         await source.CopyToAsync(target).ConfigureAwait(false);
         return destination;

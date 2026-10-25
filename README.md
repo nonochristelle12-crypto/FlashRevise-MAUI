@@ -12,6 +12,7 @@
 | **Flashcards** | Création manuelle (recto / verso / astuce / difficulté / tags / image), édition, suppression, recherche |
 | **Matières** | Couleur d'accent, description, archivage, progression et maîtrise par matière |
 | **IA (Groq)** | Génération de cartes depuis un texte, un PDF ou une image ; explication d'une carte ; chat tuteur en streaming ; résumé de notes |
+| **Compte** | Connexion, création de compte, jetons JWT rafraîchis automatiquement, déconnexion et suppression du compte via l'API FlashRevise — le mode invité reste disponible |
 | **Répétition espacée** | Algorithme SM-2 (variante Anki) : qualité de rappel, intervalle, facteur de facilité, échéances |
 | **Sessions de révision** | File de cartes, retournement Know / Didn't know, progression, chrono, résumé de fin de session (XP, précision, durée) |
 | **Progression** | Streak, objectif quotidien, XP, maîtrise globale, graphiques LiveCharts (révisions et précision sur 14 jours) |
@@ -56,6 +57,56 @@ Les écrans IA affichent un encart d'avertissement tant qu'aucune clé n'est con
 
 > Si une clé a été exposée (copiée dans un chat, un écran, un commit), **révoque-la** depuis la console Groq et génère-en une nouvelle.
 
+### API d'authentification FlashRevise
+
+L'application intègre le client de l'API du dépôt
+[`nonochristelle12-crypto/FlashRevise`](https://github.com/nonochristelle12-crypto/FlashRevise)
+(`src/FlashRevise.Api`) :
+
+| Méthode | Endpoint | Usage dans l'app |
+| --- | --- | --- |
+| `POST` | `/v1/auth/register` | Créer un compte (nom, e-mail, mot de passe, niveau, consentement) |
+| `POST` | `/v1/auth/login` | Connexion |
+| `POST` | `/v1/auth/refresh` | Rotation automatique des jetons (accès 15 min, refresh 30 jours) |
+| `POST` | `/v1/auth/logout` | Révocation de la famille de refresh tokens |
+| `POST` | `/v1/auth/forgot-password` | Demande de réinitialisation (réponse neutre) |
+| `GET` / `DELETE` | `/v1/account` | Profil du compte connecté / suppression du compte |
+| `GET` | `/health/live` | Bouton « Tester le serveur » du profil |
+
+**Lancer l'API en local** (le secret JWT n'est jamais commité) :
+
+```powershell
+# PowerShell, dans le dépôt de l'API
+$env:FLASHREVISE_DEV_JWT_KEY = [Convert]::ToBase64String(
+  (1..48 | ForEach-Object { Get-Random -Maximum 256 }))
+dotnet run --project src/FlashRevise.Api --urls http://0.0.0.0:5047
+```
+
+```bash
+# bash / macOS / Linux
+export FLASHREVISE_DEV_JWT_KEY="$(openssl rand -base64 48)"
+dotnet run --project src/FlashRevise.Api --urls http://0.0.0.0:5047
+```
+
+- `http://0.0.0.0:5047` rend l'API accessible depuis le téléphone sur le même Wi-Fi.
+- Autoriser le port **5047** dans le pare-feu Windows si le téléphone ne joint pas le PC.
+- La clé doit faire **au moins 32 octets** ; toute valeur réelle reste hors du dépôt.
+
+**Configurer l'adresse dans l'app** — onglet **Profil → Compte → Adresse de l'API** :
+
+| Cible | Adresse par défaut |
+| --- | --- |
+| Windows | `http://localhost:5047/` |
+| Émulateur Android | `http://10.0.2.2:5047/` |
+| Téléphone physique | IP LAN du PC, ex. `http://192.168.1.10:5047/` (bouton **Tester le serveur**) |
+
+- Les jetons sont conservés **uniquement** dans `SecureStorage` ; seuls le nom et l'e-mail publics
+  sont mis en cache dans les préférences pour afficher le compte hors ligne.
+- Android autorise le trafic HTTP en clair (`android:usesCleartextTraffic="true"`) pour joindre l'API
+  de développement en HTTP. En production, servir l'API en HTTPS et retirer cette autorisation.
+- Le mode invité reste le comportement par défaut : la connexion est facultative et se fait depuis
+  l'accueil (« Se connecter ») ou le profil.
+
 ---
 
 ## 4. Configuration
@@ -67,16 +118,29 @@ Les écrans IA affichent un encart d'avertissement tant qu'aucune clé n'est con
   "Groq": {
     "BaseUrl": "https://api.groq.com/openai/v1/",
     "Model": "openai/gpt-oss-120b",
+    "VisionModel": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "VisionFallbackModels": [
+      "meta-llama/llama-4-maverick-17b-128e-instruct"
+    ],
     "TimeoutSeconds": 90,
     "MaxRetries": 3,
-    "MaxOutputTokens": 4096
+    "MaxOutputTokens": 8192
   },
-  "Sync": { "Endpoint": "" }
+  "Sync": { "Endpoint": "" },
+  "Auth": { "BaseUrl": "" }
 }
 ```
 
 - `Groq:Endpoint` vide dans `Sync` ⇒ l'écran *Synchronisation* reste en mode local et l'indique.
+- `Auth:BaseUrl` vide ⇒ l'adresse par défaut dépend de la plateforme (`localhost` sur Windows,
+  `10.0.2.2` sur émulateur Android). Sur téléphone, renseigner l'IP LAN du PC dans **Profil → Compte**.
 - Changer de modèle ne demande aucune modification de code.
+- `Groq:VisionModel` est utilisé pour transcrire une photo ou un scan (texte, formules, code) ;
+  les modèles de `VisionFallbackModels` sont essayés automatiquement si le premier n'est plus servi.
+  La génération de cartes reste assurée par `Groq:Model`.
+- Dans l'écran **Générer avec l'IA**, la matière peut être saisie librement : un nom inconnu crée
+  automatiquement la matière. Le scanner (caméra) et la galerie sont accessibles directement,
+  et le raccourci **Scanner** de l'accueil ouvre la caméra.
 
 ### Stockage local
 
@@ -139,9 +203,11 @@ FlashRevise/
 │   ├── Splash/splash.svg
 │   └── Styles/                # Colors, Styles, Themes, Icons
 ├── Services/                  # métier, SM-2, notifications, offline, stockage
-│   └── Ai/                    # Groq, contrats, coffre de clé
-├── ViewModels/                # 20 ViewModels (CommunityToolkit.Mvvm)
+│   ├── Ai/                    # Groq, contrats, coffre de clé
+│   └── Auth/                  # client de l'API d'authentification (JWT, SecureStorage)
+├── ViewModels/                # ViewModels (CommunityToolkit.Mvvm)
 └── Views/                     # pages + vues d'onglets
+    └── Auth/                  # connexion, inscription, mot de passe oublié
 ```
 
 ---
@@ -169,6 +235,9 @@ FlashRevise/
 | `goals` | Objectif quotidien + bibliothèque de livres |
 | `achievements` | Succès débloqués / à venir |
 | `offline` | État hors ligne + file de synchronisation |
+| `login` | Connexion au compte FlashRevise |
+| `register` | Création de compte (nom, e-mail, mot de passe, niveau, consentement) |
+| `forgot-password` | Demande de réinitialisation du mot de passe |
 
 Les 7 écrans exportés depuis Stitch ont été repris à l'identique ; les 14 écrans restants ont été étendus en XAML en conservant strictement les tokens « Neo-Study Kinetic ».
 
@@ -206,9 +275,9 @@ Les 7 écrans exportés depuis Stitch ont été repris à l'identique ; les 14 �
 Toutes les propriétés `[ObservableProperty]` utilisent des **propriétés partielles** (compatibles AOT/WinRT, zéro warning `MVVMTK0045`).
 
 Vérification à l'exécution : l'app Windows a été lancée et parcourue (Splash → Onboarding → Accueil,
-AI Upload) avec rendu réel en thème sombre. La cible Android compile mais **n'a pas été exécutée**
-dans l'environnement de build (pas d'émulateur) : lancer `dotnet build -t:Run -f net10.0-android`
-avec un appareil branché pour valider le runtime Android.
+AI Upload) avec rendu réel en thème sombre. La cible Android a été installée et testée sur un
+**TECNO KM5** (Android 15 / API 35) : accueil invité, profil, photo de profil et configuration de la
+clé IA. Les écrans de connexion et d'inscription compilent et sont déployés avec le client d'API.
 
 ---
 
@@ -225,6 +294,9 @@ avec un appareil branché pour valider le runtime Android.
 | --- | --- |
 | « Aucune clé API » sur les écrans IA | Configurer la clé dans Profil → *Clé API IA* |
 | Erreur 401 Groq | Clé invalide ou révoquée → ressaisir dans Profil |
+| La génération reste longue ou échoue | Le délai est de 90 s par appel ; l'écran affiche l'erreur réelle (délai, quota 429, clé 401, modèle vision indisponible) et propose **Réessayer** |
+| Photo illisible / aucun texte détecté | Reprendre la photo à plat, bien éclairée ; la transcription vision gère aussi le code et les formules |
+| Scanner absent sur PC | La capture caméra est mobile uniquement ; sur Windows, utiliser **Galerie** |
 | `XA5207 android.jar introuvable` | Installer l'API 36 (commande §2) |
 | Graphiques vides | Aucune révision enregistrée dans les 14 derniers jours |
 | Rappels silencieux | Autoriser les notifications (Android 13+) ; l'app redemande la permission à l'activation |
