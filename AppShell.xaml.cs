@@ -42,8 +42,18 @@ public partial class AppShell : Shell
         AddRoute<Views.Settings.OfflineStatePage>(Routes.OfflineState);
     }
 
-    private void AddRoute<TPage>(string route) where TPage : Page =>
-        Routing.RegisterRoute(route, new ServiceRouteFactory<TPage>(_services));
+    private void AddRoute<TPage>(string route) where TPage : Page
+    {
+        try
+        {
+            Routing.RegisterRoute(route, new ServiceRouteFactory<TPage>(_services));
+        }
+        catch (ArgumentException)
+        {
+            // Android peut recréer l'activité sans nouveau processus : les routes
+            // du registre statique sont alors déjà présentes.
+        }
+    }
 
     private sealed class ServiceRouteFactory<TPage>(IServiceProvider services) : RouteFactory
         where TPage : Page

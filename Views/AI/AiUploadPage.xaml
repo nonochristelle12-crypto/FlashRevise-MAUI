@@ -37,14 +37,38 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Clé absente -->
-                <Border Style="{StaticResource Card}" IsVisible="{Binding HasApiKey, Converter={StaticResource InvertBool}}"
+                <!-- Clé absente : configuration directe -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasNoApiKey}"
                         BackgroundColor="{StaticResource WarningTint}" Stroke="{StaticResource Warning}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Label Text="{StaticResource IconKey}" Style="{StaticResource Icon}" FontSize="20"
+                                   TextColor="{StaticResource Warning}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="Aucune clé API configurée. Colle ta clé Groq ci-dessous : elle est enregistrée dans le coffre sécurisé de l'appareil."
+                                   Style="{StaticResource Caption}" TextColor="{StaticResource Warning}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                        <Border Style="{StaticResource InputWrap}">
+                            <Entry Text="{Binding ApiKeyInput}" IsPassword="True" Placeholder="gsk_..." />
+                        </Border>
+                        <Button Text="Enregistrer et tester" Style="{StaticResource PrimaryButton}" HeightRequest="46"
+                                Command="{Binding SaveApiKeyCommand}"
+                                IsEnabled="{Binding IsTestingKey, Converter={StaticResource InvertBool}}" />
+                        <ActivityIndicator IsRunning="{Binding IsTestingKey}" IsVisible="{Binding IsTestingKey}"
+                                           Color="{StaticResource Warning}" HeightRequest="24" />
+                        <Label Text="{Binding ApiKeyMessage}" IsVisible="{Binding HasApiKeyMessage}"
+                               Style="{StaticResource Caption}" TextColor="{StaticResource Warning}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Clé active -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasApiKey}"
+                        BackgroundColor="{StaticResource TertiaryTint}" Stroke="{StaticResource Tertiary}">
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                        <Label Text="{StaticResource IconKey}" Style="{StaticResource Icon}" FontSize="20"
-                               TextColor="{StaticResource Warning}" VerticalOptions="Center" />
-                        <Label Grid.Column="1" Text="Aucune clé API configurée. Ouvre Profil › Clé API IA pour activer la génération."
-                               Style="{StaticResource Caption}" TextColor="{StaticResource Warning}"
+                        <Label Text="{StaticResource IconCheckCircle}" Style="{StaticResource Icon}" FontSize="20"
+                               TextColor="{StaticResource Tertiary}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="IA connectée : ta clé Groq est active sur cet appareil."
+                               Style="{StaticResource Caption}" TextColor="{StaticResource Tertiary}"
                                VerticalOptions="Center" />
                     </Grid>
                 </Border>

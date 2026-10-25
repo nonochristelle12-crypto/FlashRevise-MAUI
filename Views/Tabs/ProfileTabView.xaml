@@ -12,16 +12,37 @@
 
                 <!-- En-tête profil -->
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                    <Border Style="{StaticResource Avatar}" WidthRequest="56" HeightRequest="56">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="28" />
-                        </Border.StrokeShape>
-                        <Label Text="{StaticResource IconPerson}" FontFamily="MaterialSymbols" FontSize="28"
-                               TextColor="{StaticResource PrimaryTint}"
-                               HorizontalOptions="Center" VerticalOptions="Center" />
-                    </Border>
+                    <Grid WidthRequest="56" HeightRequest="56">
+                        <Border Style="{StaticResource Avatar}" WidthRequest="56" HeightRequest="56">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="28" />
+                            </Border.StrokeShape>
+                            <Grid>
+                                <Label Text="{StaticResource IconPerson}" FontFamily="MaterialSymbols" FontSize="28"
+                                       TextColor="{StaticResource PrimaryTint}"
+                                       HorizontalOptions="Center" VerticalOptions="Center"
+                                       IsVisible="{Binding HasNoAvatar}" />
+                                <Image Source="{Binding AvatarPath}" Aspect="AspectFill" IsVisible="{Binding HasAvatar}" />
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding PickAvatarCommand}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                        <Border WidthRequest="22" HeightRequest="22" BackgroundColor="{StaticResource Primary}"
+                                Stroke="{StaticResource LightCanvas}" StrokeThickness="2"
+                                HorizontalOptions="End" VerticalOptions="End">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="11" />
+                            </Border.StrokeShape>
+                            <Label Text="{StaticResource IconEdit}" FontFamily="MaterialSymbols" FontSize="11"
+                                   TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding PickAvatarCommand}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                    </Grid>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="{Binding Name}" Style="{StaticResource Headline}" FontSize="22" />
+                        <Label Text="{Binding DisplayName}" Style="{StaticResource Headline}" FontSize="22" />
                         <Label Text="{Binding DailyGoalText, StringFormat='Objectif : {0} cartes / jour'}"
                                Style="{StaticResource Caption}" />
                     </VerticalStackLayout>
@@ -58,9 +79,18 @@
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Mon profil" Style="{StaticResource Overline}" />
                         <VerticalStackLayout Spacing="6">
+                            <Label Text="Photo de profil" Style="{StaticResource Caption}" />
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                <Button Text="Changer la photo" Style="{StaticResource SecondaryButton}"
+                                        HeightRequest="44" Command="{Binding PickAvatarCommand}" />
+                                <Button Grid.Column="1" Text="Retirer" Style="{StaticResource GhostButton}"
+                                        IsVisible="{Binding HasAvatar}" Command="{Binding RemoveAvatarCommand}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="6">
                             <Label Text="Prénom" Style="{StaticResource Caption}" />
                             <Border Style="{StaticResource InputWrap}">
-                                <Entry Text="{Binding Name}" Placeholder="Ton prénom" />
+                                <Entry Text="{Binding Name}" Placeholder="Invité" />
                             </Border>
                         </VerticalStackLayout>
                         <VerticalStackLayout Spacing="6">

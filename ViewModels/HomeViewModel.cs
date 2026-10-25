@@ -54,6 +54,8 @@ public partial class HomeViewModel : BaseViewModel
 
     public bool HasStreak => Dashboard.StreakDays > 0;
 
+    public bool HasAvatar => !string.IsNullOrWhiteSpace(Dashboard.AvatarPath) && File.Exists(Dashboard.AvatarPath);
+
     public bool HasNextReviews => NextReviews.Count > 0;
 
     public bool IsEmpty => !HasSubjects;
@@ -71,7 +73,7 @@ public partial class HomeViewModel : BaseViewModel
         try
         {
             Dashboard = await _stats.GetDashboardAsync();
-            Greeting = $"Bonjour, {Dashboard.FirstName} 👋";
+            Greeting = Dashboard.IsGuest ? "Bonjour 👋" : $"Bonjour, {Dashboard.FirstName} 👋";
             GoalSummary = Dashboard.RemainingForGoal == 0
                 ? "Objectif du jour atteint, bravo !"
                 : $"Plus que {Dashboard.RemainingForGoal} cartes pour valider ton cap !";
@@ -89,6 +91,7 @@ public partial class HomeViewModel : BaseViewModel
             HasSubjects = subjects.Count > 0;
             OnPropertyChanged(nameof(HasNextReviews));
             OnPropertyChanged(nameof(HasStreak));
+            OnPropertyChanged(nameof(HasAvatar));
             OnPropertyChanged(nameof(IsEmpty));
             OnPropertyChanged(nameof(GoalRatio));
             OnPropertyChanged(nameof(GoalPercentLabel));

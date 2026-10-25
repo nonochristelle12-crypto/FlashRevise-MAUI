@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FlashRevise.Services;
 using FlashRevise.Services.Ai;
+using Microsoft.Maui.Media;
 
 namespace FlashRevise.ViewModels;
 
@@ -14,6 +15,15 @@ public partial class ProfileViewModel : BaseViewModel
 
     [ObservableProperty]
     public partial string Name { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string AvatarPath { get; set; } = string.Empty;
+
+    public string DisplayName => string.IsNullOrWhiteSpace(Name) ? "Invité" : Name;
+
+    public bool HasAvatar => !string.IsNullOrWhiteSpace(AvatarPath) && File.Exists(AvatarPath);
+
+    public bool HasNoAvatar => !HasAvatar;
 
     [ObservableProperty]
     public partial string DailyGoalText { get; set; } = "30";
@@ -50,6 +60,14 @@ public partial class ProfileViewModel : BaseViewModel
 
     partial void OnStatusMessageChanged(string? value) => OnPropertyChanged(nameof(HasStatusMessage));
 
+    partial void OnNameChanged(string value) => OnPropertyChanged(nameof(DisplayName));
+
+    partial void OnAvatarPathChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasAvatar));
+        OnPropertyChanged(nameof(HasNoAvatar));
+    }
+
     partial void OnHasApiKeyChanged(bool value) => OnPropertyChanged(nameof(ApiKeyHint));
 
     partial void OnIsDarkThemeChanged(bool value)
@@ -83,6 +101,7 @@ public partial class ProfileViewModel : BaseViewModel
         {
             var profile = await _stats.GetProfileAsync();
             Name = profile.Name;
+            AvatarPath = profile.AvatarPath;
             DailyGoalText = profile.DailyGoal.ToString();
             StreakLabel = profile.Streak == 1 ? "1 jour" : $"{profile.Streak} jours";
             LongestStreakLabel = profile.LongestStreak == 1 ? "1 jour" : $"{profile.LongestStreak} jours";
@@ -115,6 +134,78 @@ public partial class ProfileViewModel : BaseViewModel
             await _stats.SaveProfileAsync(profile);
             DailyGoalText = profile.DailyGoal.ToString();
             StatusMessage = "Profil enregistré.";
+        }
+        catch (Exception ex)
+        {
+            ReportError(ex);
+        }
+    }
+
+    [RelayCommand]
+    private async Task PickAvatarAsync()
+    {
+        try
+        {
+            ClearError();
+            var photos = await MediaPicker.Default.PickPhotosAsync(new MediaPickerOptions
+            {
+                Title = "Choisir une photo de profil"
+            });
+            var photo = photos?.FirstOrDefault();
+
+            if (photo is null)
+            {
+                return;
+            }
+
+            var extension = Path.GetExtension(photo.FileName);
+            if (string.IsNullOrWhiteSpace(extension))
+            {
+                extension = ".jpg";
+            }
+
+            var destination = Path.Combine(FileSystem.AppDataDirectory, $"avatar_{DateTime.UtcNow.Ticks}{extension}");
+            await using (var source = await photo.OpenReadAsync())
+            await using (var target = File.Create(destination))
+            {
+                await source.CopyToAsync(target);
+            }
+
+            var profile = await _stats.GetProfileAsync();
+            var previous = profile.AvatarPath;
+            profile.AvatarPath = destination;
+            await _stats.SaveProfileAsync(profile);
+
+            if (!string.IsNullOrWhiteSpace(previous) && previous != destination && File.Exists(previous))
+            {
+                File.Delete(previous);
+            }
+
+            AvatarPath = destination;
+            StatusMessage = "Photo de profil mise à jour.";
+        }
+        catch (Exception ex)
+        {
+            ReportError(ex);
+        }
+    }
+
+    [RelayCommand]
+    private async Task RemoveAvatarAsync()
+    {
+        try
+        {
+            ClearError();
+            var profile = await _stats.GetProfileAsync();
+            if (!string.IsNullOrWhiteSpace(profile.AvatarPath) && File.Exists(profile.AvatarPath))
+            {
+                File.Delete(profile.AvatarPath);
+            }
+
+            profile.AvatarPath = string.Empty;
+            await _stats.SaveProfileAsync(profile);
+            AvatarPath = string.Empty;
+            StatusMessage = "Photo de profil supprimée.";
         }
         catch (Exception ex)
         {

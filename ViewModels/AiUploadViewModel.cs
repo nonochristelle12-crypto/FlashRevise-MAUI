@@ -15,6 +15,7 @@ public partial class AiUploadViewModel : BaseViewModel
     private readonly ISubjectService _subjects;
     private readonly IStorageService _storage;
     private readonly IApiKeyStore _apiKeys;
+    private readonly IAiService _ai;
     private readonly AiDraftStore _draft;
 
     private ImportedFile? _importedFile;
@@ -46,15 +47,30 @@ public partial class AiUploadViewModel : BaseViewModel
     [ObservableProperty]
     public partial bool HasApiKey { get; set; } = true;
 
+    [ObservableProperty]
+    public partial string ApiKeyInput { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string ApiKeyMessage { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial bool IsTestingKey { get; set; }
+
+    public bool HasNoApiKey => !HasApiKey;
+
+    public bool HasApiKeyMessage => !string.IsNullOrWhiteSpace(ApiKeyMessage);
+
     public AiUploadViewModel(
         ISubjectService subjects,
         IStorageService storage,
         IApiKeyStore apiKeys,
+        IAiService ai,
         AiDraftStore draft)
     {
         _subjects = subjects;
         _storage = storage;
         _apiKeys = apiKeys;
+        _ai = ai;
         _draft = draft;
         Title = "Générer avec l'IA";
     }
@@ -88,6 +104,47 @@ public partial class AiUploadViewModel : BaseViewModel
     }
 
     partial void OnHasFileChanged(bool value) => OnPropertyChanged(nameof(FileBadge));
+
+    partial void OnHasApiKeyChanged(bool value) => OnPropertyChanged(nameof(HasNoApiKey));
+
+    partial void OnApiKeyMessageChanged(string value) => OnPropertyChanged(nameof(HasApiKeyMessage));
+
+    [RelayCommand]
+    private async Task SaveApiKeyAsync()
+    {
+        var key = ApiKeyInput.Trim();
+        if (key.Length < 20 || !key.StartsWith("gsk_", StringComparison.Ordinal))
+        {
+            ApiKeyMessage = "Clé invalide : une clé Groq commence par gsk_.";
+            return;
+        }
+
+        IsTestingKey = true;
+        try
+        {
+            await _apiKeys.SetKeyAsync(key);
+            var connected = await _ai.TestConnectionAsync();
+            HasApiKey = await _apiKeys.HasKeyAsync();
+
+            if (connected)
+            {
+                ApiKeyInput = string.Empty;
+                ApiKeyMessage = "Clé validée : la génération IA est prête.";
+            }
+            else
+            {
+                ApiKeyMessage = "Clé enregistrée, mais Groq ne répond pas. Vérifie la clé et ta connexion, puis retente.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ReportError(ex);
+        }
+        finally
+        {
+            IsTestingKey = false;
+        }
+    }
 
     [RelayCommand]
     private async Task LoadAsync()

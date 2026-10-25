@@ -21,9 +21,8 @@ public sealed class DataSeeder(
         }
 
         var profile = await profiles.GetOrCreateAsync().ConfigureAwait(false);
-        if (string.IsNullOrWhiteSpace(profile.Name))
+        if (profile.DailyGoal <= 0)
         {
-            profile.Name = "Thomas";
             profile.DailyGoal = 30;
             await profiles.SaveAsync(profile).ConfigureAwait(false);
         }

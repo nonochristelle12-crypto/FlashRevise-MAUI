@@ -11,6 +11,10 @@ public class UserProfile
     [MaxLength(80)]
     public string Name { get; set; } = string.Empty;
 
+    /// <summary>Chemin local de la photo de profil copiée dans les données de l'application.</summary>
+    [MaxLength(260)]
+    public string AvatarPath { get; set; } = string.Empty;
+
     public int DailyGoal { get; set; } = 30;
 
     public int Streak { get; set; }

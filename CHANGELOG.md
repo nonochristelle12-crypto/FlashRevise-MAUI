@@ -74,6 +74,12 @@ Première version livrée, Android (priorité) et Windows PC.
 - Écran Profil dédié à la saisie/validation de la clé, avec test de connexion.
 - `.gitignore` durci : `bin/`, `obj/`, `*.user`, `appsettings.local.json`, `.env`, `*.key`, `*.keystore`, `*.jks`, `*.pfx`.
 
+#### Compte & profil
+
+- Démarrage en **compte invité** : aucun prénom inventé, l'utilisateur renseigne le sien quand il le souhaite.
+- Photo de profil : sélection via le sélecteur système, copie locale et affichage sur l'accueil et le profil, suppression possible.
+- Saisie de la clé Groq directement dans les écrans IA (génération et assistant), avec validation en un clic.
+
 #### Identité visuelle
 
 - Icône adaptative (`appicon.svg` + `appiconfg.svg`) sur canvas `#101221`, mipmaps Android générés au build.
@@ -116,6 +122,10 @@ Première version livrée, Android (priorité) et Windows PC.
   `XamlParseException`). La décoration est déplacée dans un `AbsoluteLayout` pour ne plus gonfler la
   ligne `Auto`. Flèche de retour Shell masquée sur cet écran.
 - **Thème** : brush → `Color` également corrigé sur les pages de détail, de révision et IA.
+- **Profil** : le seed ne crée plus « Thomas » ; un profil existant encore au nom de démonstration
+  repasse en invité une seule fois (sans toucher aux profils personnalisés).
+- **Android** : crash `Duplicated Route: "splash"` quand le système recrée l'activité ; l'enregistrement
+  des routes Shell est désormais idempotent.
 
 ### Vérifications
 

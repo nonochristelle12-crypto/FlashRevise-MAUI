@@ -26,6 +26,8 @@ public sealed record DailyPoint(DateTime Date, int Reviews, double Accuracy);
 public sealed class DashboardSnapshot
 {
     public string FirstName { get; init; } = string.Empty;
+    public string AvatarPath { get; init; } = string.Empty;
+    public bool IsGuest { get; init; }
     public int StreakDays { get; init; }
     public int DailyGoal { get; init; }
     public int ReviewedToday { get; init; }

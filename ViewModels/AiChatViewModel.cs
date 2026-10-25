@@ -61,6 +61,19 @@ public partial class AiChatViewModel : BaseViewModel
     [ObservableProperty]
     public partial bool HasApiKey { get; set; } = true;
 
+    [ObservableProperty]
+    public partial string ApiKeyInput { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string ApiKeyMessage { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial bool IsTestingKey { get; set; }
+
+    public bool HasNoApiKey => !HasApiKey;
+
+    public bool HasApiKeyMessage => !string.IsNullOrWhiteSpace(ApiKeyMessage);
+
     public AiChatViewModel(IAiService ai, IApiKeyStore apiKeys)
     {
         _ai = ai;
@@ -77,6 +90,47 @@ public partial class AiChatViewModel : BaseViewModel
     public bool CanSend => !IsStreaming && !string.IsNullOrWhiteSpace(Input);
 
     partial void OnInputChanged(string value) => OnPropertyChanged(nameof(CanSend));
+
+    partial void OnHasApiKeyChanged(bool value) => OnPropertyChanged(nameof(HasNoApiKey));
+
+    partial void OnApiKeyMessageChanged(string value) => OnPropertyChanged(nameof(HasApiKeyMessage));
+
+    [RelayCommand]
+    private async Task SaveApiKeyAsync()
+    {
+        var key = ApiKeyInput.Trim();
+        if (key.Length < 20 || !key.StartsWith("gsk_", StringComparison.Ordinal))
+        {
+            ApiKeyMessage = "Clé invalide : une clé Groq commence par gsk_.";
+            return;
+        }
+
+        IsTestingKey = true;
+        try
+        {
+            await _apiKeys.SetKeyAsync(key);
+            var connected = await _ai.TestConnectionAsync();
+            HasApiKey = await _apiKeys.HasKeyAsync();
+
+            if (connected)
+            {
+                ApiKeyInput = string.Empty;
+                ApiKeyMessage = "Clé validée : tu peux discuter avec l'assistant.";
+            }
+            else
+            {
+                ApiKeyMessage = "Clé enregistrée, mais Groq ne répond pas. Vérifie la clé et ta connexion, puis retente.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ReportError(ex);
+        }
+        finally
+        {
+            IsTestingKey = false;
+        }
+    }
 
     partial void OnIsStreamingChanged(bool value)
     {

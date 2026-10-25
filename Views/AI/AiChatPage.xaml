@@ -42,10 +42,22 @@
                             </VerticalStackLayout>
                         </Border>
 
-                        <Border Style="{StaticResource Card}" IsVisible="{Binding HasApiKey, Converter={StaticResource InvertBool}}"
+                        <Border Style="{StaticResource Card}" IsVisible="{Binding HasNoApiKey}"
                                 BackgroundColor="{StaticResource WarningTint}" Stroke="{StaticResource Warning}">
-                            <Label Text="Aucune clé API configurée. Ouvre Profil › Clé API IA pour discuter avec l'assistant."
-                                   Style="{StaticResource Caption}" TextColor="{StaticResource Warning}" />
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="Aucune clé API configurée. Colle ta clé Groq pour discuter avec l'assistant."
+                                       Style="{StaticResource Caption}" TextColor="{StaticResource Warning}" />
+                                <Border Style="{StaticResource InputWrap}">
+                                    <Entry Text="{Binding ApiKeyInput}" IsPassword="True" Placeholder="gsk_..." />
+                                </Border>
+                                <Button Text="Enregistrer et tester" Style="{StaticResource PrimaryButton}" HeightRequest="46"
+                                        Command="{Binding SaveApiKeyCommand}"
+                                        IsEnabled="{Binding IsTestingKey, Converter={StaticResource InvertBool}}" />
+                                <ActivityIndicator IsRunning="{Binding IsTestingKey}" IsVisible="{Binding IsTestingKey}"
+                                                   Color="{StaticResource Warning}" HeightRequest="24" />
+                                <Label Text="{Binding ApiKeyMessage}" IsVisible="{Binding HasApiKeyMessage}"
+                                       Style="{StaticResource Caption}" TextColor="{StaticResource Warning}" />
+                            </VerticalStackLayout>
                         </Border>
 
                         <VerticalStackLayout Spacing="8" IsVisible="{Binding ShowSuggestions}">

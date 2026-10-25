@@ -4,4 +4,6 @@ namespace FlashRevise;
 public static class AppPreferences
 {
     public const string OnboardingCompleted = "flashrevise.onboarding.completed";
+
+    public const string LegacyProfileMigrated = "flashrevise.profile.legacy_migrated";
 }

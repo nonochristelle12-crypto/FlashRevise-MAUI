@@ -36,9 +36,13 @@
                             Command="{Binding OpenNotificationsCommand}" />
 
                     <Border Grid.Column="3" Style="{StaticResource Avatar}">
-                        <Label Text="{StaticResource IconPerson}" FontFamily="MaterialSymbols" FontSize="20"
-                               TextColor="{StaticResource PrimaryTint}"
-                               HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Grid>
+                            <Label Text="{StaticResource IconPerson}" FontFamily="MaterialSymbols" FontSize="20"
+                                   TextColor="{StaticResource PrimaryTint}"
+                                   HorizontalOptions="Center" VerticalOptions="Center"
+                                   IsVisible="{Binding HasAvatar, Converter={StaticResource InvertBool}}" />
+                            <Image Source="{Binding Dashboard.AvatarPath}" Aspect="AspectFill" IsVisible="{Binding HasAvatar}" />
+                        </Grid>
                     </Border>
                 </Grid>
 

@@ -44,7 +44,9 @@ public sealed class StatsService(
 
         return new DashboardSnapshot
         {
-            FirstName = string.IsNullOrWhiteSpace(profile.Name) ? "toi" : profile.Name,
+            FirstName = string.IsNullOrWhiteSpace(profile.Name) ? "Invité" : profile.Name,
+            AvatarPath = profile.AvatarPath,
+            IsGuest = string.IsNullOrWhiteSpace(profile.Name),
             StreakDays = profile.Streak,
             DailyGoal = profile.DailyGoal,
             ReviewedToday = reviewedToday,
